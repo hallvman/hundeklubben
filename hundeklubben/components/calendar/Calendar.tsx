@@ -65,7 +65,7 @@ export default function DogClubCalendar() {
   };
 
   return (
-    <div style={{ height: "500px" }}>
+    <div style={{ height: "700px" }}>
       <Calendar
         localizer={localizer}
         events={events}

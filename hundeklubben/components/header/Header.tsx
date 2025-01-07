@@ -3,10 +3,12 @@ import Link from "next/link";
 import { PawPrintIcon as Paw } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { User } from "../navbar/user";
+import { useUser } from "@/hooks/useUser";
 
 export default function Header() {
   const pathname = usePathname();
 
+  const user = useUser();
   if (pathname.startsWith("/calendar")) {
     return null;
   }
@@ -21,7 +23,7 @@ export default function Header() {
             </span>
           </Link>
           <nav className="hidden md:flex space-x-8"></nav>
-          <User />
+          <User user={user} />
         </div>
       </div>
     </header>

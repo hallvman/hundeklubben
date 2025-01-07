@@ -23,9 +23,10 @@ const upcomingEvents = [
     location: "Town Square",
   },
 ];
+
 export default function Events() {
   return (
-    <section className="py-16">
+    <section id="events" className="py-16">
       <div className="container mx-auto px-4">
         <h3 className="text-3xl font-bold mb-8 text-center">
           Kommende Eventer

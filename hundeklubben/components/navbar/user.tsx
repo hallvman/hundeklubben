@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import {
@@ -9,8 +10,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import { signOut } from "@/utils/supabase/auth";
 
-export function User() {
+export function User(user: any) {
+  const handleSignOut = async () => {
+    await signOut();
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -31,9 +36,33 @@ export function User() {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Min Bruker</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <Link href="/login">Sign In</Link>
-        </DropdownMenuItem>
+        {user ? (
+          <>
+            <DropdownMenuItem asChild>
+              <Link href="/calendar" className="w-full">
+                Kalender
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Button size="sm" onClick={handleSignOut}>
+                Logg ut
+              </Button>
+            </DropdownMenuItem>
+          </>
+        ) : (
+          <>
+            <DropdownMenuItem asChild>
+              <Link href="/login" className="w-full">
+                Logg inn
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/signup" className="w-full">
+                Registrer Bruker
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
