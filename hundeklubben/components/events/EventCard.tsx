@@ -17,7 +17,9 @@ export function EventCard({ event }: { event: Event }) {
 				<CardDescription>
 					<div className='flex items-center space-x-2'>
 						<CalendarIcon className='h-4 w-4' />
-						<span>{new Date(event.start).toLocaleString()}</span>
+						<span>
+							Starttidspunkt: {new Date(event.start).toLocaleString()}
+						</span>
 					</div>
 				</CardDescription>
 			</CardHeader>
@@ -25,6 +27,7 @@ export function EventCard({ event }: { event: Event }) {
 				<p className='text-sm text-muted-foreground mb-4'>
 					{event.description}
 				</p>
+				<p className='text-sm text-muted-foreground mb-4'>{event.location}</p>
 				<div className='flex items-center justify-between'>
 					<div className='flex items-center space-x-2'>
 						<UsersIcon className='h-4 w-4' />

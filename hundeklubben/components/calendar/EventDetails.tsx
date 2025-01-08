@@ -1,4 +1,4 @@
-import { Event } from '@/hooks/useEvents';
+import { Event } from '@/types/event';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 

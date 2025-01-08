@@ -2,17 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { getAllEvents } from '@/utils/supabase/events'
-
-export interface Event {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  description: string;
-  attendees: string[];
-  attendees_limit: number;
-  isPublic: boolean;
-}
+import { Event } from '@/types/event'
 
 export function useEvents() {
   const [events, setEvents] = useState<Event[]>([])

@@ -46,7 +46,7 @@ export default function EventsComponent() {
 		return (
 			<div className='text-center'>
 				<p className='text-red-500 mb-4'>{error}</p>
-				<Button onClick={handleRefresh}>Try Again</Button>
+				<Button onClick={handleRefresh}>Prøv igjen.</Button>
 			</div>
 		);
 	}
@@ -54,11 +54,11 @@ export default function EventsComponent() {
 	return (
 		<div className='container mx-auto p-4'>
 			<div className='flex justify-between items-center mb-6'>
-				<h1 className='text-2xl font-bold'>My Events</h1>
+				<h1 className='text-2xl font-bold'>Mine eventer</h1>
 				<Button onClick={handleRefresh}>Refresh</Button>
 			</div>
 			{events.length === 0 ? (
-				<p className='text-muted-foreground'>You don't have any events yet.</p>
+				<p className='text-muted-foreground'>Du har ikke laget noen eventer.</p>
 			) : (
 				<>
 					<div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
@@ -73,7 +73,7 @@ export default function EventsComponent() {
 					) : (
 						<div className='text-center mt-4'>
 							<Button onClick={fetchEvents} disabled={isLoading}>
-								Load More
+								Last inn mer
 							</Button>
 						</div>
 					)}

@@ -2,12 +2,11 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from './server';
-import { Event } from '@/types/event';
+import { Event } from '@/types/event'
 
 export async function getAllEvents() {
   const supabase = createClient()
   
-  // Fetch events
   const { data: events, error: eventsError } = await supabase
     .from('events')
     .select('*')
@@ -33,6 +32,48 @@ export async function getAllEvents() {
 
   return eventsWithAttendees
 }
+
+export async function getAllPublicEvents(): Promise<Event[]> {
+    const supabase = createClient()
+
+  const { data: publicEvents, error: eventsError } = await supabase
+    .from('events')
+    .select(`
+      *,
+      attendee_count:event_attendees(count)
+    `)
+    .eq('isPublic', true)
+    .order('created_at', { ascending: false })
+
+  if (eventsError) {
+    console.error('Error fetching public events:', eventsError)
+    return []
+  }
+
+  return publicEvents || []
+}
+
+export async function getLatestPublicEvents(limit: number = 3): Promise<Event[]> {
+    const supabase = createClient()
+
+  const { data: latestEvents, error: eventsError } = await supabase
+    .from('events')
+    .select(`
+      *,
+      attendee_count:event_attendees(count)
+    `)
+    .eq('isPublic', true)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (eventsError) {
+    console.error('Error fetching latest public events:', eventsError)
+    return []
+  }
+
+  return latestEvents || []
+}
+
 
 export async function addAttendeeToEvent(formData: FormData) {
     const email = formData.get('email') as string

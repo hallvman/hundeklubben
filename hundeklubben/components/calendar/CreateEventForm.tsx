@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Event } from '@/hooks/useEvents';
+import { Event } from '@/types/event';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,18 +20,20 @@ export function CreateEventForm({
 	const [end, setEnd] = useState('');
 	const [attendees_limit, setAttendeesLimit] = useState<number>(0);
 	const [description, setDescription] = useState('');
+	const [location, setLocation] = useState('');
 	const [isPublic, setIsPublic] = useState(false);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		onCreateEvent({
 			title,
-			start: new Date(start),
-			end: new Date(end),
+			start: new Date(start).toLocaleDateString(),
+			end: new Date(end).toLocaleDateString(),
 			description,
 			attendees_limit,
 			attendees: [],
 			isPublic,
+			location,
 		});
 	};
 
@@ -72,6 +74,14 @@ export function CreateEventForm({
 					id='description'
 					value={description}
 					onChange={(e) => setDescription(e.target.value)}
+				/>
+			</div>
+			<div>
+				<Label htmlFor='location'>Lokasjon</Label>
+				<Textarea
+					id='location'
+					value={location}
+					onChange={(e) => setLocation(e.target.value)}
 				/>
 			</div>
 			<div>

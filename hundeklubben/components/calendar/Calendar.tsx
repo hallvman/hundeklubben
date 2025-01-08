@@ -6,10 +6,11 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { CreateEventForm } from './CreateEventForm';
 import { EventDetails } from './EventDetails';
-import { useEvents, Event } from '@/hooks/useEvents';
+import { useEvents } from '@/hooks/useEvents';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { Event } from '@/types/event';
 
 moment.locale('en-GB');
 const localizer = momentLocalizer(moment);
