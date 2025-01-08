@@ -2,13 +2,9 @@
 import { getUser } from '@/utils/supabase/auth'
 import { useState, useEffect } from 'react'
 
-// Define the User interface
 interface User {
   id: string
   email: string
-  // Add other properties as needed, for example:
-  // email: string
-  // name: string
 }
 
 export function useUser() {

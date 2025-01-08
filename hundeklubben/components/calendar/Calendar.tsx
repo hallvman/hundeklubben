@@ -1,92 +1,93 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Calendar, momentLocalizer } from "react-big-calendar";
-import moment from "moment";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import { CreateEventForm } from "../events/CreateEventForm";
-import { EventDetails } from "../events/EventDetails";
+import { useState } from 'react';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { CreateEventForm } from './CreateEventForm';
+import { EventDetails } from './EventDetails';
+import { useEvents, Event } from '@/hooks/useEvents';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
-moment.locale("en-GB");
+moment.locale('en-GB');
 const localizer = momentLocalizer(moment);
-// Mock event type
-type Event = {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  description: string;
-  attendees: string[];
-};
-
-// Mock initial events
-const initialEvents: Event[] = [
-  {
-    id: "1",
-    title: "Team Meeting",
-    start: new Date(2025, 0, 8, 10, 0),
-    end: new Date(2025, 0, 8, 11, 0),
-    description: "Weekly team sync",
-    attendees: ["alice@example.com", "bob@example.com"],
-  },
-  {
-    id: "2",
-    title: "Project Kickoff",
-    start: new Date(2025, 0, 10, 14, 0),
-    end: new Date(2025, 0, 10, 16, 0),
-    description: "Kickoff meeting for new project",
-    attendees: ["alice@example.com", "charlie@example.com"],
-  },
-];
 
 export default function DogClubCalendar() {
-  const [events, setEvents] = useState<Event[]>(initialEvents);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+	const { toast } = useToast();
+	const { events, loading, addEvent, updateEvent } = useEvents();
+	const [showCreateForm, setShowCreateForm] = useState(false);
+	const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
-  const handleSelectEvent = (event: Event) => {
-    setSelectedEvent(event);
-  };
+	const handleSelectEvent = (event: Event) => {
+		setSelectedEvent(event);
+	};
 
-  const handleCreateEvent = (newEvent: Event) => {
-    setEvents([...events, { ...newEvent, id: String(events.length + 1) }]);
-    setShowCreateForm(false);
-  };
+	const handleCreateEvent = (newEvent: Omit<Event, 'id'>) => {
+		addEvent(newEvent);
+		setShowCreateForm(false);
+	};
 
-  const handleJoinEvent = (eventId: string, attendee: string) => {
-    setEvents(
-      events.map((event) =>
-        event.id === eventId
-          ? { ...event, attendees: [...event.attendees, attendee] }
-          : event
-      )
-    );
-    setSelectedEvent(null);
-  };
+	const handleJoinEvent = (eventId: string, attendee: string) => {
+		const event = events.find((e) => e.id === eventId);
+		if (event) {
+			if (event.attendees.length < event.attendees_limit) {
+				updateEvent({ ...event, attendees: [...event.attendees, attendee] });
+				toast({
+					title: 'Success',
+					description: 'You have successfully joined the event.',
+				});
+			} else {
+				toast({
+					title: 'Error',
+					description: 'This event is already full.',
+					variant: 'destructive',
+				});
+			}
+		}
+		setSelectedEvent(null);
+	};
 
-  return (
-    <div style={{ height: "700px" }}>
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        onSelectEvent={handleSelectEvent}
-        style={{ height: "100%" }}
-      />
-      {showCreateForm && (
-        <CreateEventForm
-          onCreateEvent={handleCreateEvent}
-          onCancel={() => setShowCreateForm(false)}
-        />
-      )}
-      {selectedEvent && (
-        <EventDetails
-          event={selectedEvent}
-          onJoin={handleJoinEvent}
-          onClose={() => setSelectedEvent(null)}
-        />
-      )}
-    </div>
-  );
+	if (loading) {
+		return <div>Loading...</div>;
+	}
+
+	return (
+		<div className='h-[700px] p-4'>
+			<Calendar
+				localizer={localizer}
+				events={events}
+				startAccessor='start'
+				endAccessor='end'
+				onSelectEvent={handleSelectEvent}
+				className='h-full'
+			/>
+			<Button onClick={() => setShowCreateForm(true)} className='mt-4'>
+				Create Event
+			</Button>
+			<Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
+				<DialogContent>
+					<CreateEventForm
+						onCreateEvent={handleCreateEvent}
+						onCancel={() => setShowCreateForm(false)}
+					/>
+				</DialogContent>
+			</Dialog>
+			<Dialog
+				open={!!selectedEvent}
+				onOpenChange={() => setSelectedEvent(null)}
+			>
+				<DialogContent>
+					{selectedEvent && (
+						<EventDetails
+							event={selectedEvent}
+							onJoin={handleJoinEvent}
+							onClose={() => setSelectedEvent(null)}
+						/>
+					)}
+				</DialogContent>
+			</Dialog>
+		</div>
+	);
 }
