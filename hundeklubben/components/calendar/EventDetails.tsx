@@ -21,9 +21,10 @@ export function EventDetails({ event, onJoin, onClose }: EventDetailsProps) {
 	return (
 		<div className='space-y-4'>
 			<h2 className='text-2xl font-bold'>{event.title}</h2>
-			<p>Start: {event.start.toLocaleString()}</p>
-			<p>End: {event.end.toLocaleString()}</p>
+			<p>Starttidspunkt: {event.start.toLocaleString()}</p>
+			<p>Sluttidspunkt: {event.end.toLocaleString()}</p>
 			<p>{event.description}</p>
+			<p>{event.location}</p>
 			<div>
 				<h3 className='text-lg font-semibold'>Attendees:</h3>
 				<ul>
@@ -34,7 +35,7 @@ export function EventDetails({ event, onJoin, onClose }: EventDetailsProps) {
 			</div>
 			<div>
 				<p className='text-sm text-muted-foreground'>
-					{attendeeCount} / {event.attendees_limit} attendees
+					{attendeeCount} / {event.attendees_limit} deltagere
 				</p>
 				<Progress value={attendeePercentage} className='mt-2' />
 			</div>
@@ -43,12 +44,13 @@ export function EventDetails({ event, onJoin, onClose }: EventDetailsProps) {
 					{isFull ? 'Event Full' : 'Join Event'}
 				</Button>
 				<Button variant='outline' onClick={onClose}>
-					Close
+					Lukk
 				</Button>
 			</div>
 			{isFull && (
 				<p className='text-sm text-red-500' role='alert'>
-					This event has reached its attendee limit.
+					This event has reached its attendee limit. Dette eventet har nådd max
+					antall.
 				</p>
 			)}
 		</div>
