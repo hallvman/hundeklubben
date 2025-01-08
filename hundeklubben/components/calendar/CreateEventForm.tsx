@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 
 interface CreateEventFormProps {
 	onCreateEvent: (event: Omit<Event, 'id'>) => void;
@@ -19,6 +20,7 @@ export function CreateEventForm({
 	const [end, setEnd] = useState('');
 	const [attendees_limit, setAttendeesLimit] = useState<number>(0);
 	const [description, setDescription] = useState('');
+	const [isPublic, setIsPublic] = useState(false);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -29,6 +31,7 @@ export function CreateEventForm({
 			description,
 			attendees_limit,
 			attendees: [],
+			isPublic,
 		});
 	};
 
@@ -81,6 +84,14 @@ export function CreateEventForm({
 					required
 					min={0}
 				/>
+			</div>
+			<div className='flex items-center space-x-2'>
+				<Switch
+					id='isPublic'
+					checked={isPublic}
+					onCheckedChange={setIsPublic}
+				/>
+				<Label htmlFor='isPublic'>Offentlig event</Label>
 			</div>
 			<div className='flex justify-end space-x-2'>
 				<Button type='button' variant='outline' onClick={onCancel}>

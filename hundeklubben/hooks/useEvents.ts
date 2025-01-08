@@ -11,6 +11,7 @@ export interface Event {
   description: string;
   attendees: string[];
   attendees_limit: number;
+  isPublic: boolean;
 }
 
 export function useEvents() {

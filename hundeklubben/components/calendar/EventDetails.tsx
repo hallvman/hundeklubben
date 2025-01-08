@@ -10,7 +10,6 @@ interface EventDetailsProps {
 
 export function EventDetails({ event, onJoin, onClose }: EventDetailsProps) {
 	const handleJoin = () => {
-		// In a real application, you'd get the user's name or ID from authentication
 		const attendee = 'New Attendee';
 		onJoin(event.id, attendee);
 	};

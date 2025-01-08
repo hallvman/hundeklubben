@@ -7,7 +7,6 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CalendarIcon, UsersIcon } from 'lucide-react';
-import Image from 'next/image';
 import { Event } from '@/types/event';
 
 export function EventCard({ event }: { event: Event }) {
