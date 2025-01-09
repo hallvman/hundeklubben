@@ -1,22 +1,52 @@
 import { Event } from '@/types/event';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { getUserEmail } from '@/utils/supabase/auth';
+import { useState, useEffect } from 'react';
 
 interface EventDetailsProps {
 	event: Event;
-	onJoin: (eventId: string, attendee: string) => void;
+	onJoin: (eventId: string) => void;
+	onLeave: (eventId: string) => void;
+	onDelete: (eventId: string) => void;
 	onClose: () => void;
 }
 
-export function EventDetails({ event, onJoin, onClose }: EventDetailsProps) {
+export function EventDetails({
+	event,
+	onJoin,
+	onLeave,
+	onDelete,
+	onClose,
+}: EventDetailsProps) {
+	const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
+
+	useEffect(() => {
+		async function fetchUserEmail() {
+			const email = await getUserEmail();
+			setCurrentUserEmail(email as string);
+		}
+		fetchUserEmail();
+	}, []);
+
 	const handleJoin = () => {
-		const attendee = 'New Attendee';
-		onJoin(event.id, attendee);
+		onJoin(event.id);
+	};
+
+	const handleLeave = () => {
+		onLeave(event.id);
+	};
+
+	const handleDelete = () => {
+		onDelete(event.id);
 	};
 
 	const attendeeCount = event.attendees.length;
 	const isFull = attendeeCount >= event.attendees_limit;
 	const attendeePercentage = (attendeeCount / event.attendees_limit) * 100;
+	const isAttending =
+		currentUserEmail && event.attendees.includes(currentUserEmail);
+	const isCreator = currentUserEmail === event.creator;
 
 	return (
 		<div className='space-y-4'>
@@ -40,9 +70,21 @@ export function EventDetails({ event, onJoin, onClose }: EventDetailsProps) {
 				<Progress value={attendeePercentage} className='mt-2' />
 			</div>
 			<div className='flex justify-end space-x-2'>
-				<Button onClick={handleJoin} disabled={isFull} aria-disabled={isFull}>
-					{isFull ? 'Event Full' : 'Join Event'}
-				</Button>
+				{!isAttending && (
+					<Button onClick={handleJoin} disabled={isFull} aria-disabled={isFull}>
+						{isFull ? 'Event Full' : 'Join Event'}
+					</Button>
+				)}
+				{isAttending && !isCreator && (
+					<Button onClick={handleLeave} variant='destructive'>
+						Forlat Event
+					</Button>
+				)}
+				{isCreator && (
+					<Button onClick={handleDelete} variant='destructive'>
+						Slett Event
+					</Button>
+				)}
 				<Button variant='outline' onClick={onClose}>
 					Lukk
 				</Button>

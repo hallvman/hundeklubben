@@ -48,6 +48,23 @@ export async function checkEmail(email: string) {
       return { isAdmin: false, error: error }
     }
   }
+
+   export async function getUserEmail() {
+    const supabase = createClient()
+
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      
+      const email = user ? user?.email : ""
+
+      return email
+    } catch (error) {
+      console.error('Unexpected error:', error)
+      return ""
+    }
+  }
   
 
 export async function signOut() {

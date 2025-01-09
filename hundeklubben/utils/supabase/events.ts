@@ -74,54 +74,52 @@ export async function getLatestPublicEvents(limit: number = 3): Promise<Event[]>
   return latestEvents || []
 }
 
-
-export async function addAttendeeToEvent(formData: FormData) {
-    const email = formData.get('email') as string
-    const supabase = createClient()
+export async function addEvent(event: Omit<Event, 'id'>) {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('events')
+    .insert(event)
+    .select()
   
-    const { error } = await supabase
-      .from('event_attendees')
-      .insert({ email })
-  
-    if (error) {
-      return { success: false, message: error.message }
-    }
-  
-    return { success: true, message: 'Attendees added successfully' }
+  if (error) {
+    console.error('Error adding event:', error)
+    throw error
   }
   
-  export async function deleteAttendeeFromEvent(formData: FormData) {
-    const email = formData.get('email') as string
-    const supabase = createClient()
+  revalidatePath('/calendar')
+  return data[0] as Event
+}
 
-    const { error } = await supabase
-      .from('event_attendees')
-      .delete()
-      .eq('email', email)
-  
-    if (error) {
-      return { success: false, message: error.message }
-    }
-  
-    revalidatePath('/calendar/users')
-    return { success: true, message: `Medlem ${email} ble slettet!` }
+export async function deleteEvent(eventId: string) {
+  const supabase = createClient()
+
+  const { error } = await supabase
+    .from('events')
+    .delete()
+    .eq('id', eventId)
+
+  if (error) {
+    return { success: false, message: error.message }
   }
 
-  export async function deleteEvent(formData: FormData) {
-    const id = formData.get('id') as string
-    const supabase = createClient()
+  revalidatePath('/calendar')
+  return { success: true, message: `Event ble slettet!` }
+}
 
-    const { error } = await supabase
-      .from('events')
-      .delete()
-      .eq('id', id)
-  
-    if (error) {
-      return { success: false, message: error.message }
-    }
-  
-    return { success: true, message: `Event ble slettet!` }
+export async function updateEventAttendees(eventId: string, attendees: string[]) {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('events')
+    .update({ attendees })
+    .eq('id', eventId)
+
+  if (error) {
+    console.error('Error updating event attendees:', error)
+    throw error
   }
+
+  revalidatePath('/calendar')
+}
 
 export async function getAllMyEvents(page = 1, itemsPerPage = 9): Promise<Event[]> {
   const supabase = createClient();

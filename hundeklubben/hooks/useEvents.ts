@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { getAllEvents } from '@/utils/supabase/events'
+import { getAllEvents, addEvent as addEventToDb, deleteEvent as deleteEventFromDb } from '@/utils/supabase/events'
 import { Event } from '@/types/event'
 
 export function useEvents() {
@@ -28,9 +28,13 @@ export function useEvents() {
     fetchEvents()
   }, [])
 
-  const addEvent = (newEvent: Omit<Event, 'id'>) => {
-    const eventWithId = { ...newEvent, id: String(events.length + 1) };
-    setEvents([...events, eventWithId]);
+  const addEvent = async (newEvent: Omit<Event, 'id'>) => {
+    try {
+      const addedEvent = await addEventToDb(newEvent)
+      setEvents([...events, { ...addedEvent, start: new Date(addedEvent.start).toLocaleDateString(), end: new Date(addedEvent.end).toLocaleDateString() }])
+    } catch (error) {
+      console.error('Error adding event:', error)
+    }
   }
 
   const updateEvent = (updatedEvent: Event) => {
@@ -39,5 +43,15 @@ export function useEvents() {
     ))
   }
 
-  return { events, loading, addEvent, updateEvent }
+  const deleteEvent = async (eventId: string) => {
+    try {
+      await deleteEventFromDb(eventId)
+      setEvents(events.filter(event => event.id !== eventId))
+    } catch (error) {
+      console.error('Error deleting event:', error)
+    }
+  }
+
+  return { events, loading, addEvent, updateEvent, deleteEvent }
 }
+
