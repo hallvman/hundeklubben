@@ -60,15 +60,14 @@ export default function AdminUsersPage() {
 
 	return (
 		<div className='container mx-auto p-4'>
-			<h1 className='text-2xl font-bold mb-4'>Admin User Management</h1>
+			<h1 className='text-2xl font-bold mb-4'>Administrer brukere</h1>
 			<Table>
 				<TableHeader>
 					<TableRow>
-						<TableHead>Name</TableHead>
-						<TableHead>Email</TableHead>
-						<TableHead>Phone</TableHead>
-						<TableHead>Created At</TableHead>
-						<TableHead>Actions</TableHead>
+						<TableHead>Navn</TableHead>
+						<TableHead>E-post</TableHead>
+						<TableHead>Telefon</TableHead>
+						<TableHead>Handling</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -78,14 +77,11 @@ export default function AdminUsersPage() {
 							<TableCell>{user.email}</TableCell>
 							<TableCell>{user.phone}</TableCell>
 							<TableCell>
-								{new Date(user.created_at).toLocaleString()}
-							</TableCell>
-							<TableCell>
 								<Button
 									variant='destructive'
 									onClick={() => handleDeleteUser(user.id)}
 								>
-									Delete
+									Slett
 								</Button>
 							</TableCell>
 						</TableRow>

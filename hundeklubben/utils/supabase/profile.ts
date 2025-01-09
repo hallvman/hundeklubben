@@ -4,9 +4,9 @@ import { createClient } from "./server"
 
 export async function requestPasswordReset(email: string) {
   const supabase = createClient()
-  
+
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/reset-password`,
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback/reset-password`,
   })
 
   if (error) {
