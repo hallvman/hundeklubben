@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { getAllEvents, addEvent as addEventToDb, deleteEvent as deleteEventFromDb } from '@/utils/supabase/events'
+import { getAllEvents, addEvent as addEventToDb, deleteEvent as deleteEventFromDb, joinEvent, deleteFromEvent } from '@/utils/supabase/events'
 import { Event } from '@/types/event'
 
 export function useEvents() {
@@ -28,19 +28,29 @@ export function useEvents() {
     fetchEvents()
   }, [])
 
-  const addEvent = async (newEvent: Omit<Event, 'id'>) => {
+  const addEvent = async (newEvent: Omit<Event, 'id' |'attendees'>) => {
     try {
       const addedEvent = await addEventToDb(newEvent)
-      setEvents([...events, { ...addedEvent, start: new Date(addedEvent.start).toLocaleDateString(), end: new Date(addedEvent.end).toLocaleDateString() }])
+      setEvents([...events, { ...addedEvent, start: new Date(addedEvent.start), end: new Date(addedEvent.end) }])
     } catch (error) {
       console.error('Error adding event:', error)
     }
   }
 
-  const updateEvent = (updatedEvent: Event) => {
-    setEvents(events.map(event => 
-      event.id === updatedEvent.id ? updatedEvent : event
-    ))
+  const updateEvent = async (event_id: string, email: string) => {
+    try {
+      await joinEvent(event_id, email);
+    } catch (error) {
+      
+    }
+  }
+
+  const removeFromEvent = async (event_id: string, email:string) => {
+    try {
+      await deleteFromEvent(event_id, email)
+    } catch (error) {
+      
+    }
   }
 
   const deleteEvent = async (eventId: string) => {
@@ -52,6 +62,6 @@ export function useEvents() {
     }
   }
 
-  return { events, loading, addEvent, updateEvent, deleteEvent }
+  return { events, loading, addEvent, updateEvent, removeFromEvent, deleteEvent }
 }
 

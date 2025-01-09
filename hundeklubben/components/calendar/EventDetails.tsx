@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { getUserEmail } from '@/utils/supabase/auth';
 import { useState, useEffect } from 'react';
+import { AlignLeft, Calendar, MapPin } from 'lucide-react';
 
 interface EventDetailsProps {
 	event: Event;
@@ -41,34 +42,55 @@ export function EventDetails({
 		onDelete(event.id);
 	};
 
-	const attendeeCount = event.attendees.length;
-	const isFull = attendeeCount >= event.attendees_limit;
-	const attendeePercentage = (attendeeCount / event.attendees_limit) * 100;
+	const attendeeCount = event.attendees?.length ?? 0;
+	const hasAttendeeLimit =
+		event.attendees_limit !== null && event.attendees_limit > 0;
+	const isFull =
+		hasAttendeeLimit && attendeeCount >= (event.attendees_limit ?? 0);
+	const attendeePercentage = hasAttendeeLimit
+		? Math.min((attendeeCount / (event.attendees_limit ?? 1)) * 100, 100)
+		: 0;
 	const isAttending =
-		currentUserEmail && event.attendees.includes(currentUserEmail);
+		currentUserEmail && event.attendees?.includes(currentUserEmail);
 	const isCreator = currentUserEmail === event.creator;
 
 	return (
 		<div className='space-y-4'>
 			<h2 className='text-2xl font-bold'>{event.title}</h2>
-			<p>Starttidspunkt: {event.start.toLocaleString()}</p>
-			<p>Sluttidspunkt: {event.end.toLocaleString()}</p>
-			<p>{event.description}</p>
-			<p>{event.location}</p>
-			<div>
-				<h3 className='text-lg font-semibold'>Deltagere:</h3>
-				<ul>
-					{event.attendees.map((attendee, index) => (
-						<li key={index}>{attendee}</li>
-					))}
-				</ul>
-			</div>
-			<div>
-				<p className='text-sm text-muted-foreground'>
-					{attendeeCount} / {event.attendees_limit} deltagere
-				</p>
-				<Progress value={attendeePercentage} className='mt-2' />
-			</div>
+			<p className='flex items-center mb-2'>
+				<Calendar className='mr-2 h-4 w-4' />
+				Starttidspunkt: {new Date(event.start).toLocaleDateString()}
+			</p>
+			<p className='flex items-center mb-2'>
+				<Calendar className='mr-2 h-4 w-4' />
+				Sluttidspunkt: {new Date(event.start).toLocaleDateString()}
+			</p>
+			<p className='flex items-center'>
+				<AlignLeft className='mr-2 h-4 w-4' />
+				{event.description}
+			</p>
+			<p className='flex items-center'>
+				<MapPin className='mr-2 h-4 w-4' />
+				<span>{event.location}</span>
+			</p>
+			{event.attendees && event.attendees.length > 0 && (
+				<div>
+					<h3 className='text-lg font-semibold'>Deltagere:</h3>
+					<ul>
+						{event.attendees.map((attendee, index) => (
+							<li key={index}>{attendee}</li>
+						))}
+					</ul>
+				</div>
+			)}
+			{hasAttendeeLimit && (
+				<div>
+					<p className='text-sm text-muted-foreground'>
+						{attendeeCount} / {event.attendees_limit} deltagere
+					</p>
+					<Progress value={attendeePercentage} className='mt-2' />
+				</div>
+			)}
 			<div className='flex justify-end space-x-2'>
 				{!isAttending && (
 					<Button onClick={handleJoin} disabled={isFull} aria-disabled={isFull}>

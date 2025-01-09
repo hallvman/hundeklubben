@@ -7,18 +7,30 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { CreateEventForm } from './CreateEventForm';
 import { EventDetails } from './EventDetails';
 import { useEvents } from '@/hooks/useEvents';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Event } from '@/types/event';
-import { getUserEmail } from '@/utils/supabase/auth';
+import { getUser, getUserEmail } from '@/utils/supabase/auth';
 
 moment.locale('en-GB');
 const localizer = momentLocalizer(moment);
 
 export default function DogClubCalendar() {
 	const { toast } = useToast();
-	const { events, loading, addEvent, updateEvent, deleteEvent } = useEvents();
+	const {
+		events,
+		loading,
+		addEvent,
+		updateEvent,
+		removeFromEvent,
+		deleteEvent,
+	} = useEvents();
 	const [showCreateForm, setShowCreateForm] = useState(false);
 	const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
@@ -26,38 +38,44 @@ export default function DogClubCalendar() {
 		setSelectedEvent(event);
 	};
 
-	const handleCreateEvent = async (newEvent: Omit<Event, 'id'>) => {
-		const creatorEmail = await getUserEmail();
-		const eventWithCreator = { ...newEvent, creator: creatorEmail as string };
-		addEvent(eventWithCreator);
-		setShowCreateForm(false);
-		toast({
-			title: 'Success',
-			description: 'Event ble laget.',
-		});
+	const handleCreateEvent = async (
+		newEvent: Omit<Event, 'id' | 'creator' | 'user_id' | 'attendees'>
+	) => {
+		try {
+			const user = await getUser();
+			if (!user) {
+				throw new Error('User not found');
+			}
+			const email = user?.email as string;
+			const id = user?.id as string;
+			const eventWithCreator = { ...newEvent, user_id: id, creator: email };
+			const createdEvent = await addEvent(eventWithCreator);
+			setShowCreateForm(false);
+			toast({
+				title: 'Success',
+				description: 'Event ble laget.',
+			});
+			console.log('Created event:', createdEvent);
+		} catch (error) {
+			console.error('Error creating event:', error);
+			toast({
+				title: 'Error',
+				description: 'Det oppstod en feil ved opprettelse av eventet.',
+				variant: 'destructive',
+			});
+		}
 	};
 
 	const handleJoinEvent = async (eventId: string) => {
-		const attendee = await getUserEmail();
+		const attendeeEmail = await getUserEmail();
 		const event = events.find((e) => e.id === eventId);
 		if (event) {
 			if (event.attendees.length < event.attendees_limit) {
-				if (!event.attendees.includes(attendee as string)) {
-					updateEvent({
-						...event,
-						attendees: [...event.attendees, attendee as string],
-					});
-					toast({
-						title: 'Success',
-						description: 'Du er nå lagt til i eventet.',
-					});
-				} else {
-					toast({
-						title: 'Error',
-						description: 'Du er allerede lagt til i dette eventet.',
-						variant: 'destructive',
-					});
-				}
+				updateEvent(event.id, attendeeEmail as string);
+				toast({
+					title: 'Success',
+					description: 'Du er nå lagt til i eventet.',
+				});
 			} else {
 				toast({
 					title: 'Error',
@@ -70,11 +88,10 @@ export default function DogClubCalendar() {
 	};
 
 	const handleLeaveEvent = async (eventId: string) => {
-		const attendee = await getUserEmail();
+		const attendeeEmail = await getUserEmail();
 		const event = events.find((e) => e.id === eventId);
 		if (event) {
-			const updatedAttendees = event.attendees.filter((a) => a !== attendee);
-			updateEvent({ ...event, attendees: updatedAttendees });
+			removeFromEvent(eventId, attendeeEmail as string);
 			toast({
 				title: 'Success',
 				description: 'Du er nå fjernet fra eventet',
@@ -111,6 +128,9 @@ export default function DogClubCalendar() {
 			</Button>
 			<Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
 				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Lag Event</DialogTitle>
+					</DialogHeader>
 					<CreateEventForm
 						onCreateEvent={handleCreateEvent}
 						onCancel={() => setShowCreateForm(false)}
@@ -122,6 +142,9 @@ export default function DogClubCalendar() {
 				onOpenChange={() => setSelectedEvent(null)}
 			>
 				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Event Detaljer</DialogTitle>
+					</DialogHeader>
 					{selectedEvent && (
 						<EventDetails
 							event={selectedEvent}

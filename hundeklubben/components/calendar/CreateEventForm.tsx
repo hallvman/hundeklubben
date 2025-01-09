@@ -5,10 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { getUserEmail } from '@/utils/supabase/auth';
 
 interface CreateEventFormProps {
-	onCreateEvent: (event: Omit<Event, 'id'>) => void;
+	onCreateEvent: (
+		event: Omit<Event, 'id' | 'creator' | 'user_id' | 'attendees'>
+	) => void;
 	onCancel: () => void;
 }
 
@@ -25,16 +26,13 @@ export function CreateEventForm({
 	const [isPublic, setIsPublic] = useState(false);
 
 	const handleSubmit = async (e: React.FormEvent) => {
-		const email = (await getUserEmail()) as string;
 		e.preventDefault();
 		onCreateEvent({
 			title,
-			start: new Date(start).toLocaleDateString(),
-			end: new Date(end).toLocaleDateString(),
-			creator: email,
+			start: new Date(start),
+			end: new Date(end),
 			description,
 			attendees_limit,
-			attendees: [],
 			isPublic,
 			location,
 		});

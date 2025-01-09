@@ -87,7 +87,6 @@ export async function signOut() {
       return { success: false, message: "Email and password are required" };
     }
   
-    // Check if email exists in members table
     const { exists, error: checkError } = await checkEmail(email);
   
     if (checkError) {

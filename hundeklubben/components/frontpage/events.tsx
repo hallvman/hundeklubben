@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect } from 'react';
 import { Calendar, MapPin } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';

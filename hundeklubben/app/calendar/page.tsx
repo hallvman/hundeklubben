@@ -1,7 +1,6 @@
 'use client';
-import { Button } from '@/components/ui/button';
+import EventsComponent from '@/components/events/EventsComponent';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PlusCircle } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 const DogClubCalendar = dynamic(
@@ -15,14 +14,20 @@ export default function ProductsPage() {
 			<div className='flex items-center'>
 				<TabsList>
 					<TabsTrigger value='calendar'>Kalender</TabsTrigger>
-					<TabsTrigger value='eventer'>Dine Eventer</TabsTrigger>
+					<TabsTrigger value='eventer'>Mine Eventer</TabsTrigger>
+					<TabsTrigger value='attendence'>Påmeldt</TabsTrigger>
 				</TabsList>
 				<div className='ml-auto flex items-center gap-2'></div>
 			</div>
 			<TabsContent value='calendar'>
 				<DogClubCalendar />
 			</TabsContent>
-			<TabsContent value='eventer'></TabsContent>
+			<TabsContent value='eventer'>
+				<EventsComponent />
+			</TabsContent>
+			<TabsContent value='attendence'>
+				<EventsComponent />
+			</TabsContent>
 		</Tabs>
 	);
 }

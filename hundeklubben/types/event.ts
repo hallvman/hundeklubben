@@ -1,9 +1,10 @@
 export interface Event {
   id: string;
   title: string;
-  start: string;
-  end: string;
+  start: Date;
+  end: Date;
   creator: string;
+  user_id: string;
   description: string;
   attendees_limit: number;
   attendees: string[];
