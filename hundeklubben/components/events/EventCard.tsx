@@ -42,7 +42,7 @@ export function EventCard({ event }: { event: Event }) {
 								: 'default'
 						}
 					>
-						{event.attendees.length >= event.attendees_limit ? 'Full' : 'Open'}
+						{event.attendees.length >= event.attendees_limit ? 'Fult' : 'Åpent'}
 					</Badge>
 				</div>
 			</CardContent>

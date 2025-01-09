@@ -26,7 +26,7 @@ export function EventDetails({ event, onJoin, onClose }: EventDetailsProps) {
 			<p>{event.description}</p>
 			<p>{event.location}</p>
 			<div>
-				<h3 className='text-lg font-semibold'>Attendees:</h3>
+				<h3 className='text-lg font-semibold'>Deltagere:</h3>
 				<ul>
 					{event.attendees.map((attendee, index) => (
 						<li key={index}>{attendee}</li>
@@ -49,8 +49,7 @@ export function EventDetails({ event, onJoin, onClose }: EventDetailsProps) {
 			</div>
 			{isFull && (
 				<p className='text-sm text-red-500' role='alert'>
-					This event has reached its attendee limit. Dette eventet har nådd max
-					antall.
+					Dette eventet har nådd max antall.
 				</p>
 			)}
 		</div>
