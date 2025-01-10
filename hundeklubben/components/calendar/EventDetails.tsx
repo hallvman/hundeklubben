@@ -4,6 +4,15 @@ import { Progress } from '@/components/ui/progress';
 import { getUserEmail } from '@/utils/supabase/auth';
 import { useState, useEffect } from 'react';
 import { AlignLeft, Calendar, MapPin } from 'lucide-react';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface EventDetailsProps {
 	event: Event;
@@ -21,6 +30,7 @@ export function EventDetails({
 	onClose,
 }: EventDetailsProps) {
 	const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
+	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
 	useEffect(() => {
 		async function fetchUserEmail() {
@@ -40,6 +50,7 @@ export function EventDetails({
 
 	const handleDelete = () => {
 		onDelete(event.id);
+		setIsDeleteDialogOpen(false);
 	};
 
 	const attendeeCount = event.attendees?.length ?? 0;
@@ -59,11 +70,13 @@ export function EventDetails({
 			<h2 className='text-2xl font-bold'>{event.title}</h2>
 			<p className='flex items-center mb-2'>
 				<Calendar className='mr-2 h-4 w-4' />
-				Starttidspunkt: {new Date(event.start).toLocaleDateString()}
+				Starttidspunkt: {new Date(event.start).toLocaleDateString()} -{' '}
+				{new Date(event.start).toLocaleTimeString()}
 			</p>
 			<p className='flex items-center mb-2'>
 				<Calendar className='mr-2 h-4 w-4' />
-				Sluttidspunkt: {new Date(event.start).toLocaleDateString()}
+				Sluttidspunkt: {new Date(event.end).toLocaleDateString()} -{' '}
+				{new Date(event.end).toLocaleTimeString()}
 			</p>
 			<p className='flex items-center'>
 				<AlignLeft className='mr-2 h-4 w-4' />
@@ -73,16 +86,6 @@ export function EventDetails({
 				<MapPin className='mr-2 h-4 w-4' />
 				<span>{event.location}</span>
 			</p>
-			{event.attendees && event.attendees.length > 0 && (
-				<div>
-					<h3 className='text-lg font-semibold'>Deltagere:</h3>
-					<ul>
-						{event.attendees.map((attendee, index) => (
-							<li key={index}>{attendee}</li>
-						))}
-					</ul>
-				</div>
-			)}
 			{hasAttendeeLimit && (
 				<div>
 					<p className='text-sm text-muted-foreground'>
@@ -97,15 +100,42 @@ export function EventDetails({
 						{isFull ? 'Event Full' : 'Join Event'}
 					</Button>
 				)}
-				{isAttending && !isCreator && (
+				{isAttending && (
 					<Button onClick={handleLeave} variant='destructive'>
 						Forlat Event
 					</Button>
 				)}
 				{isCreator && (
-					<Button onClick={handleDelete} variant='destructive'>
-						Slett Event
-					</Button>
+					<Dialog
+						open={isDeleteDialogOpen}
+						onOpenChange={setIsDeleteDialogOpen}
+					>
+						<DialogTrigger asChild>
+							<Button variant='destructive'>Slett Event</Button>
+						</DialogTrigger>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>
+									Er du sikker på at du vil slette dette eventet?
+								</DialogTitle>
+								<DialogDescription>
+									Denne handlingen kan ikke angres. Dette vil permanent slette
+									eventet og fjerne alle tilknyttede data.
+								</DialogDescription>
+							</DialogHeader>
+							<DialogFooter>
+								<Button
+									variant='outline'
+									onClick={() => setIsDeleteDialogOpen(false)}
+								>
+									Avbryt
+								</Button>
+								<Button variant='destructive' onClick={handleDelete}>
+									Slett Event
+								</Button>
+							</DialogFooter>
+						</DialogContent>
+					</Dialog>
 				)}
 				<Button variant='outline' onClick={onClose}>
 					Lukk

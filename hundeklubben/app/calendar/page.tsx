@@ -25,9 +25,7 @@ export default function ProductsPage() {
 			<TabsContent value='eventer'>
 				<EventsComponent />
 			</TabsContent>
-			<TabsContent value='attendence'>
-				<EventsComponent />
-			</TabsContent>
+			<TabsContent value='attendence'></TabsContent>
 		</Tabs>
 	);
 }

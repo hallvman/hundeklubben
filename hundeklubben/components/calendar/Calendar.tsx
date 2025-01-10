@@ -177,7 +177,7 @@ export default function DogClubCalendar() {
 				view={currentView}
 				components={components}
 				className='h-full'
-				views={['month', 'week', 'day']}
+				views={['month', 'week', 'day', 'agenda']}
 			/>
 			<Button onClick={() => setShowCreateForm(true)} className='mt-4'>
 				Lag Event

@@ -19,10 +19,6 @@
     background-color: #4caf50;
 }
 
-.rbc-event-label {
-    display: none;
-}
-
 .rbc-event-content {
     font-size: 0.8em;
     white-space: nowrap;

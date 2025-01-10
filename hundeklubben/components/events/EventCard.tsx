@@ -88,7 +88,14 @@ export function EventCard({ event, onDelete, onEdit }: EventCardProps) {
 						<ClockIcon className='h-4 w-4' />
 						<span className='text-sm'>
 							{new Date(event.start).toLocaleDateString()} -{' '}
-							{new Date(event.end).toLocaleDateString()}
+							{new Date(event.start).toLocaleTimeString()}
+						</span>
+					</div>
+					<div className='flex items-center space-x-2'>
+						<ClockIcon className='h-4 w-4' />
+						<span className='text-sm'>
+							{new Date(event.end).toLocaleDateString()} -{' '}
+							{new Date(event.end).toLocaleTimeString()}
 						</span>
 					</div>
 					<div className='flex items-center space-x-2'>
@@ -102,7 +109,7 @@ export function EventCard({ event, onDelete, onEdit }: EventCardProps) {
 			<CardFooter className='flex justify-between'>
 				<Dialog>
 					<DialogTrigger asChild>
-						<Button variant='outline'>Detaljer</Button>
+						<Button variant='outline'>Deltagere</Button>
 					</DialogTrigger>
 					<DialogContent>
 						<DialogHeader>
@@ -112,28 +119,14 @@ export function EventCard({ event, onDelete, onEdit }: EventCardProps) {
 							</DialogDescription>
 						</DialogHeader>
 						<div className='space-y-4'>
-							<p>{event.description}</p>
-							<div>
-								<h4 className='font-semibold'>Tidspunkt:</h4>
-								<p>
-									{new Date(event.start).toLocaleDateString()} -{' '}
-									{new Date(event.end).toLocaleDateString()}
-								</p>
-							</div>
-							<div>
-								<h4 className='font-semibold'>Sted:</h4>
-								<p>{event.location}</p>
-							</div>
-							<div>
-								<h4 className='font-semibold'>
-									Deltakere ({event.attendees.length}/{event.attendees_limit}):
-								</h4>
-								<ul className='list-disc list-inside'>
-									{event.attendees.map((attendee, index) => (
-										<li key={index}>{attendee}</li>
-									))}
-								</ul>
-							</div>
+							<h4 className='font-semibold'>
+								Deltakere ({event.attendees.length}/{event.attendees_limit}):
+							</h4>
+							<ul className='list-disc list-inside'>
+								{event.attendees.map((attendee, index) => (
+									<li key={index}>{attendee}</li>
+								))}
+							</ul>
 						</div>
 					</DialogContent>
 				</Dialog>

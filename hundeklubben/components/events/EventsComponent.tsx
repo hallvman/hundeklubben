@@ -24,7 +24,6 @@ export default function EventsComponent() {
 	}, []);
 
 	const fetchEvents = async () => {
-		console.log('events', events);
 		setIsLoading(true);
 		setError(null);
 		try {
