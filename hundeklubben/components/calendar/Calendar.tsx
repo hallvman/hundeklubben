@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
+import { useEffect, useState } from 'react';
+import { Calendar, momentLocalizer, View } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { CreateEventForm } from './CreateEventForm';
@@ -18,6 +18,13 @@ import { useToast } from '@/hooks/use-toast';
 import { Event } from '@/types/event';
 import { getUser, getUserEmail } from '@/utils/supabase/auth';
 
+import './index.css';
+import { GetAllAttendees } from '@/utils/supabase/events';
+import { CalendarEvent } from './CalendarEvent';
+import { MonthEvent } from './MonthEvent';
+import { WeekEvent } from './WeekEvent';
+import { DayEvent } from './DayEvent';
+
 moment.locale('en-GB');
 const localizer = momentLocalizer(moment);
 
@@ -33,6 +40,23 @@ export default function DogClubCalendar() {
 	} = useEvents();
 	const [showCreateForm, setShowCreateForm] = useState(false);
 	const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+	const [attendeesCount, setAttendeesCount] = useState<Record<string, number>>(
+		{}
+	);
+	const [currentView, setCurrentView] = useState<View>('month');
+
+	useEffect(() => {
+		const fetchAttendeesCount = async () => {
+			const counts: Record<string, number> = {};
+			for (const event of events) {
+				const attendees = await GetAllAttendees(event.id);
+				counts[event.id] = attendees?.length || 0;
+			}
+			setAttendeesCount(counts);
+		};
+
+		fetchAttendeesCount();
+	}, [events]);
 
 	const handleSelectEvent = (event: Event) => {
 		setSelectedEvent(event);
@@ -109,6 +133,34 @@ export default function DogClubCalendar() {
 		setSelectedEvent(null);
 	};
 
+	const components = {
+		event: ({ event }: { event: Event }) => {
+			const attendeesCountForEvent = attendeesCount[event.id] || 0;
+
+			switch (currentView) {
+				case 'month':
+					return (
+						<MonthEvent event={event} attendeesCount={attendeesCountForEvent} />
+					);
+				case 'week':
+					return (
+						<WeekEvent event={event} attendeesCount={attendeesCountForEvent} />
+					);
+				case 'day':
+					return (
+						<DayEvent event={event} attendeesCount={attendeesCountForEvent} />
+					);
+				default:
+					return (
+						<CalendarEvent
+							event={event}
+							attendeesCount={attendeesCountForEvent}
+						/>
+					);
+			}
+		},
+	};
+
 	if (loading) {
 		return <div>Loading...</div>;
 	}
@@ -121,7 +173,11 @@ export default function DogClubCalendar() {
 				startAccessor='start'
 				endAccessor='end'
 				onSelectEvent={handleSelectEvent}
+				onView={(view) => setCurrentView(view)}
+				view={currentView}
+				components={components}
 				className='h-full'
+				views={['month', 'week', 'day']}
 			/>
 			<Button onClick={() => setShowCreateForm(true)} className='mt-4'>
 				Lag Event

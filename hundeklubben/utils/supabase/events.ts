@@ -74,6 +74,22 @@ export async function getLatestPublicEvents(limit: number = 3): Promise<Event[]>
   return latestEvents || []
 }
 
+export async function GetAllAttendees(event_id: string) {
+    const supabase = createClient()
+
+  const { data: latestEvents, error: eventsError } = await supabase
+    .from('event_attendees')
+    .select('*')
+    .eq('event_id', event_id)
+
+  if (eventsError) {
+    console.error('Error fetching latest public events:', eventsError)
+    return []
+  }
+
+  return latestEvents || []
+}
+
 export async function addEvent(event: Omit<Event, 'id' | 'attendees'>) {
   const supabase = createClient()
   const { data, error } = await supabase
