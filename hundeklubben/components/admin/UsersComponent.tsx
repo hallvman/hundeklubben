@@ -43,7 +43,6 @@ export default function AdminUsersPage() {
 		setLoading(true);
 		try {
 			const fetchedUsers = await getUsers();
-			console.log(fetchedUsers);
 			setUsers(fetchedUsers);
 		} catch (error) {
 			setError(
