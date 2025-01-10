@@ -155,17 +155,19 @@ export async function deleteFromEvent(event_id: string, attendees_email: string)
 
 export async function leaveEvent(eventId: string, userEmail: string) {
   const supabase = createClient()
+
   const { error } = await supabase
     .from('event_attendees')
     .delete()
-    .match({ event_id: eventId, attendee_mail: userEmail })
+    .match({ event_id: eventId, attendees_email: userEmail })
 
   if (error) {
     console.error('Error leaving event:', error)
-    return false
+    return { success: false, error: error.message }
   }
 
-  return true
+  revalidatePath('/dashboard')
+  return { success: true }
 }
 
 export async function getAllMyEvents(page = 1, itemsPerPage = 9): Promise<Event[]> {

@@ -1,5 +1,6 @@
 'use client';
 import EventsComponent from '@/components/events/EventsComponent';
+import JoinedEventsComponent from '@/components/events/JoinedEventsComponent';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import dynamic from 'next/dynamic';
 
@@ -25,7 +26,9 @@ export default function ProductsPage() {
 			<TabsContent value='eventer'>
 				<EventsComponent />
 			</TabsContent>
-			<TabsContent value='attendence'></TabsContent>
+			<TabsContent value='attendence'>
+				<JoinedEventsComponent />
+			</TabsContent>
 		</Tabs>
 	);
 }
