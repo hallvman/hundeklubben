@@ -10,6 +10,14 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog';
 import { deleteUser, getUsers } from '@/utils/supabase/admin';
 
 interface User {
@@ -24,6 +32,8 @@ export default function AdminUsersPage() {
 	const [users, setUsers] = useState<User[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+	const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
 	useEffect(() => {
 		fetchUsers();
@@ -33,6 +43,7 @@ export default function AdminUsersPage() {
 		setLoading(true);
 		try {
 			const fetchedUsers = await getUsers();
+			console.log(fetchedUsers);
 			setUsers(fetchedUsers);
 		} catch (error) {
 			setError(
@@ -42,10 +53,19 @@ export default function AdminUsersPage() {
 		setLoading(false);
 	}
 
-	async function handleDeleteUser(userId: string) {
+	function openDeleteDialog(user: User) {
+		setUserToDelete(user);
+		setDeleteDialogOpen(true);
+	}
+
+	async function confirmDeleteUser() {
+		if (!userToDelete) return;
+
 		try {
-			await deleteUser(userId);
-			setUsers(users.filter((user) => user.id !== userId));
+			await deleteUser(userToDelete.id);
+			setUsers(users.filter((user) => user.id !== userToDelete.id));
+			setDeleteDialogOpen(false);
+			setUserToDelete(null);
 		} catch (error) {
 			setError(
 				error instanceof Error
@@ -57,6 +77,9 @@ export default function AdminUsersPage() {
 
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error: {error}</div>;
+
+	const name =
+		userToDelete?.name !== 'N/A' ? userToDelete?.name : userToDelete?.email;
 
 	return (
 		<div className='container mx-auto p-4'>
@@ -79,7 +102,7 @@ export default function AdminUsersPage() {
 							<TableCell>
 								<Button
 									variant='destructive'
-									onClick={() => handleDeleteUser(user.id)}
+									onClick={() => openDeleteDialog(user)}
 								>
 									Slett
 								</Button>
@@ -88,6 +111,29 @@ export default function AdminUsersPage() {
 					))}
 				</TableBody>
 			</Table>
+
+			<Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Bekreft sletting av bruker</DialogTitle>
+						<DialogDescription>
+							Er du sikker på at du vil slette brukeren {name}? Denne handlingen
+							kan ikke angres.
+						</DialogDescription>
+					</DialogHeader>
+					<DialogFooter>
+						<Button
+							variant='outline'
+							onClick={() => setDeleteDialogOpen(false)}
+						>
+							Avbryt
+						</Button>
+						<Button variant='destructive' onClick={confirmDeleteUser}>
+							Slett bruker
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 }
