@@ -102,9 +102,9 @@ export default function JoinedEventsComponent() {
 		if (result.success) {
 			toast({
 				title: 'Success',
-				description: 'You have left the event.',
+				description: 'Du har forlatt eventet.',
 			});
-			fetchEvents(); // Refresh the list of joined events
+			fetchEvents();
 		} else {
 			toast({
 				title: 'Error',
@@ -134,7 +134,7 @@ export default function JoinedEventsComponent() {
 		return (
 			<div className='text-center'>
 				<p className='text-red-500 mb-4'>{error}</p>
-				<Button onClick={handleRefresh}>Try again</Button>
+				<Button onClick={handleRefresh}>Prøv igjen</Button>
 			</div>
 		);
 	}
@@ -178,18 +178,18 @@ export default function JoinedEventsComponent() {
 			<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>Leave Event</DialogTitle>
+						<DialogTitle>Forlat Event</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to leave this event? This action cannot be
-							undone.
+							Er du sikker på at du vil forlate eventet? Dette kan ikke
+							omgjøres.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
 						<Button variant='secondary' onClick={() => setIsDialogOpen(false)}>
-							Cancel
+							Avslutt
 						</Button>
 						<Button variant='destructive' onClick={handleLeaveEvent}>
-							Leave Event
+							Fotlat Event
 						</Button>
 					</DialogFooter>
 				</DialogContent>

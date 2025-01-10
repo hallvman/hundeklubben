@@ -4,24 +4,5 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 36px !important;
     background: #17405d;
-}
-.rbc-event {
-    background-color: #3174ad;
-    border-radius: 5px;
-    color: white;
-    border: none;
-    padding: 2px 5px;
-}
-
-.rbc-event.personal {
-    background-color: #4caf50;
-}
-
-.rbc-event-content {
-    font-size: 0.8em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }

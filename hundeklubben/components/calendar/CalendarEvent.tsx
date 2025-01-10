@@ -12,6 +12,11 @@ export function CalendarEvent({ event, attendeesCount }: CalendarEventProps) {
 	return (
 		<div>
 			<h4>{event.title}</h4>
+
+			<p className='flex items-center'>
+				<AlignLeft className='mr-2 h-4 w-4' />
+				{event.description}
+			</p>
 			<p className='flex items-center mb-2'>
 				<Calendar className='mr-2 h-4 w-4' />
 				Starttidspunkt: {new Date(event.start).toLocaleDateString()}
@@ -19,10 +24,6 @@ export function CalendarEvent({ event, attendeesCount }: CalendarEventProps) {
 			<p className='flex items-center mb-2'>
 				<Calendar className='mr-2 h-4 w-4' />
 				Sluttidspunkt: {new Date(event.start).toLocaleDateString()}
-			</p>
-			<p className='flex items-center'>
-				<AlignLeft className='mr-2 h-4 w-4' />
-				{event.description}
 			</p>
 			<p className='flex items-center'>
 				<MapPin className='mr-2 h-4 w-4' />

@@ -95,7 +95,7 @@ export function EventDetails({
 				</div>
 			)}
 			<div className='flex justify-end space-x-2'>
-				{!isAttending && (
+				{!isAttending && hasAttendeeLimit && (
 					<Button onClick={handleJoin} disabled={isFull} aria-disabled={isFull}>
 						{isFull ? 'Event Full' : 'Join Event'}
 					</Button>
