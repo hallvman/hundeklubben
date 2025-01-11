@@ -24,6 +24,7 @@ import { CalendarEvent } from './CalendarEvent';
 import { MonthEvent } from './MonthEvent';
 import { WeekEvent } from './WeekEvent';
 import { DayEvent } from './DayEvent';
+import { Loader2 } from 'lucide-react';
 
 moment.locale('en-GB');
 const localizer = momentLocalizer(moment);
@@ -162,7 +163,7 @@ export default function DogClubCalendar() {
 	};
 
 	if (loading) {
-		return <div>Loading...</div>;
+		return <Loader2 className='h-8 w-8 animate-spin' />;
 	}
 
 	return (

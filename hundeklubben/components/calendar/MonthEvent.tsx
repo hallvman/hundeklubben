@@ -12,12 +12,14 @@ export function MonthEvent({ event, attendeesCount }: MonthEventProps) {
 		<div className='text-xs p-1 flex justify-between items-center'>
 			<div className='font-semibold truncate flex-grow'>{event.title}</div>
 			<div className='flex items-center justify-between mt-1'>
-				<div className='flex items-center'>
-					<UsersIcon className='h-4 w-4 mr-1' />
-					<span>
-						{attendeesCount}/{event.attendees_limit}
-					</span>
-				</div>
+				{event.attendees_limit !== 0 && (
+					<div className='flex items-center'>
+						<UsersIcon className='h-4 w-4 mr-1' />
+						<span>
+							{attendeesCount}/{event.attendees_limit}
+						</span>
+					</div>
+				)}
 			</div>
 		</div>
 	);

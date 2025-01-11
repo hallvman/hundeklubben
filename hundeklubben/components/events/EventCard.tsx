@@ -56,17 +56,19 @@ export function EventCard({ event, onDelete, onEdit }: EventCardProps) {
 			<CardHeader>
 				<CardTitle className='flex justify-between items-center'>
 					<span>{event.title}</span>
-					<Badge
-						variant={
-							event.attendees.length >= event.attendees_limit
-								? 'secondary'
-								: 'default'
-						}
-					>
-						{event.attendees.length >= event.attendees_limit
-							? 'Fullt'
-							: 'Åpent'}
-					</Badge>
+					{event.attendees_limit !== 0 && (
+						<Badge
+							variant={
+								event.attendees.length >= event.attendees_limit
+									? 'secondary'
+									: 'default'
+							}
+						>
+							{event.attendees.length >= event.attendees_limit
+								? 'Fullt'
+								: 'Åpent'}
+						</Badge>
+					)}
 				</CardTitle>
 				<CardDescription>
 					<div className='flex items-center space-x-2'>
