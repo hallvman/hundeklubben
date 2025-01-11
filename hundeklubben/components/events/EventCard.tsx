@@ -73,19 +73,26 @@ export function EventCard({ event, onDelete, onEdit }: EventCardProps) {
 				<CardDescription>
 					<div className='flex items-center space-x-2'>
 						<CalendarIcon className='h-4 w-4' />
-						<span>{new Date(event.start).toLocaleDateString()}</span>
+						<span>
+							{new Date(event.start).toLocaleDateString()} -{' '}
+							{new Date(event.start).toLocaleTimeString()}
+						</span>
 					</div>
 				</CardDescription>
 			</CardHeader>
 			<CardContent className='flex-grow'>
-				<p className='text-sm text-muted-foreground mb-4'>
-					{event.description}
-				</p>
+				{event.description && (
+					<p className='text-sm text-muted-foreground mb-4'>
+						{event.description}
+					</p>
+				)}
 				<div className='space-y-2'>
-					<div className='flex items-center space-x-2'>
-						<MapPinIcon className='h-4 w-4' />
-						<span className='text-sm'>{event.location}</span>
-					</div>
+					{event.location && (
+						<div className='flex items-center space-x-2'>
+							<MapPinIcon className='h-4 w-4' />
+							<span className='text-sm'>{event.location}</span>
+						</div>
+					)}
 					<div className='flex items-center space-x-2'>
 						<ClockIcon className='h-4 w-4' />
 						<span className='text-sm'>
@@ -100,12 +107,14 @@ export function EventCard({ event, onDelete, onEdit }: EventCardProps) {
 							{new Date(event.end).toLocaleTimeString()}
 						</span>
 					</div>
-					<div className='flex items-center space-x-2'>
-						<UsersIcon className='h-4 w-4' />
-						<span className='text-sm'>
-							{event.attendees.length} / {event.attendees_limit} deltakere
-						</span>
-					</div>
+					{event.attendees_limit !== 0 && (
+						<div className='flex items-center space-x-2'>
+							<UsersIcon className='h-4 w-4' />
+							<span className='text-sm'>
+								{event.attendees.length} / {event.attendees_limit} deltakere
+							</span>
+						</div>
+					)}
 				</div>
 			</CardContent>
 			<CardFooter className='flex justify-between'>

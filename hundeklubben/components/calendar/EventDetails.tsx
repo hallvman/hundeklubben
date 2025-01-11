@@ -78,14 +78,18 @@ export function EventDetails({
 				Sluttidspunkt: {new Date(event.end).toLocaleDateString()} -{' '}
 				{new Date(event.end).toLocaleTimeString()}
 			</p>
-			<p className='flex items-center'>
-				<AlignLeft className='mr-2 h-4 w-4' />
-				{event.description}
-			</p>
-			<p className='flex items-center'>
-				<MapPin className='mr-2 h-4 w-4' />
-				<span>{event.location}</span>
-			</p>
+			{event.description && (
+				<p className='flex items-center'>
+					<AlignLeft className='mr-2 h-4 w-4' />
+					{event.description}
+				</p>
+			)}
+			{event.location && (
+				<p className='flex items-center'>
+					<MapPin className='mr-2 h-4 w-4' />
+					<span>{event.location}</span>
+				</p>
+			)}
 			{hasAttendeeLimit && (
 				<div>
 					<p className='text-sm text-muted-foreground'>
