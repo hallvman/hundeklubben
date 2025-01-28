@@ -31,7 +31,14 @@ import { WeekEvent } from './WeekEvent';
 import { DayEvent } from './DayEvent';
 import { Loader2 } from 'lucide-react';
 
-moment.locale('no-NB');
+moment.locale('nb');
+
+moment.updateLocale('nb', {
+	week: {
+		dow: 1,
+	},
+});
+
 const localizer = momentLocalizer(moment);
 
 export default function DogClubCalendar() {
