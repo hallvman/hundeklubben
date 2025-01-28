@@ -31,7 +31,7 @@ export default function EventsComponent() {
 			setEvents((prevEvents) => [...prevEvents, ...fetchedEvents]);
 			setPage((prevPage) => prevPage + 1);
 		} catch (err) {
-			setError('Failed to fetch events. Please try again.');
+			setError(`Failed to fetch events: ${err} Please try again.`);
 		} finally {
 			setIsLoading(false);
 		}
@@ -57,7 +57,7 @@ export default function EventsComponent() {
 		} catch (err) {
 			toast({
 				title: 'Feil',
-				description: 'Kunne ikke slette arrangementet. Vennligst prøv igjen.',
+				description: `Kunne ikke slette arrangementet. Vennligst prøv igjen: ${err}`,
 				variant: 'destructive',
 			});
 		}

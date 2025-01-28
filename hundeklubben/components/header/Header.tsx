@@ -20,7 +20,7 @@ export default function Header() {
 					<Link href='/' className='flex items-center space-x-2'>
 						<Paw className='h-8 w-8' />
 						<span className='text-2xl font-bold'>
-							Tønsberg Hundeklubb's Kalender
+							Tønsberg Hundeklubb sin Kalender
 						</span>
 					</Link>
 					<nav className='hidden md:flex space-x-8'></nav>

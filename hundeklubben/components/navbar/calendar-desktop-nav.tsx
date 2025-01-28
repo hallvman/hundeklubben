@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Calendar, PawPrintIcon as Paw, Settings, Users2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import NavItem from './nav-item';
-import { checkAdminRole, getUser } from '@/utils/supabase/auth';
+import { checkAdminRole } from '@/utils/supabase/auth';
 
 export default async function DesktopNav() {
 	const isAdmin = await checkAdminRole();

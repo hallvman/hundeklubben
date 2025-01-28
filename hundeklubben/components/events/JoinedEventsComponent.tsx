@@ -4,7 +4,6 @@ import { useToast } from '@/hooks/use-toast';
 import { getUser } from '@/utils/supabase/auth';
 import { createClient } from '@/utils/supabase/client';
 import { Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,7 +38,6 @@ export default function JoinedEventsComponent() {
 	const [error, setError] = useState<string | null>(null);
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-	const router = useRouter();
 	const { toast } = useToast();
 	const supabase = createClient();
 

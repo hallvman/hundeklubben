@@ -1,6 +1,5 @@
 import { Event } from '@/types/event';
-import { Badge } from '@/components/ui/badge';
-import { UsersIcon, MapPinIcon, AlignLeft, Calendar } from 'lucide-react';
+import { UsersIcon, MapPinIcon, AlignLeft } from 'lucide-react';
 
 interface DayEventProps {
 	event: Event;

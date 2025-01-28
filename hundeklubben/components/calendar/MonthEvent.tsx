@@ -1,5 +1,4 @@
 import { Event } from '@/types/event';
-import { Badge } from '@/components/ui/badge';
 import { UsersIcon } from 'lucide-react';
 
 interface MonthEventProps {

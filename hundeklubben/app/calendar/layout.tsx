@@ -4,7 +4,6 @@ import MobileNav from '@/components/navbar/calendar-mobile-nav';
 import { User } from '@/components/navbar/user';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-import { SearchInput } from '@/components/calendar/search';
 import { DashboardBreadcrumb } from '@/components/navbar/Breadcrumb';
 
 export default async function DashboardLayout({

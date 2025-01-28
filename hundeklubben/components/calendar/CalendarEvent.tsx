@@ -8,7 +8,7 @@ interface CalendarEventProps {
 	attendeesCount: number;
 }
 
-export function CalendarEvent({ event, attendeesCount }: CalendarEventProps) {
+export function CalendarEvent({ event }: CalendarEventProps) {
 	return (
 		<div>
 			<h4>{event.title}</h4>
