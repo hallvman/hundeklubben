@@ -74,13 +74,12 @@ export default function DogClubCalendar() {
 			const email = user?.email as string;
 			const id = user?.id as string;
 			const eventWithCreator = { ...newEvent, user_id: id, creator: email };
-			const createdEvent = await addEvent(eventWithCreator);
+			await addEvent(eventWithCreator);
 			setShowCreateForm(false);
 			toast({
 				title: 'Success',
 				description: 'Event ble laget.',
 			});
-			console.log('Created event:', createdEvent);
 		} catch (error) {
 			console.error('Error creating event:', error);
 			toast({
@@ -95,7 +94,8 @@ export default function DogClubCalendar() {
 		const attendeeEmail = await getUserEmail();
 		const event = events.find((e) => e.id === eventId);
 		if (event) {
-			if (event.attendees.length < event.attendees_limit) {
+			const allAttendees = await GetAllAttendees(event.id);
+			if (allAttendees?.length < event.attendees_limit) {
 				updateEvent(event.id, attendeeEmail as string);
 				toast({
 					title: 'Success',
