@@ -42,7 +42,7 @@ function EventCard({ event }: { event: Event }) {
 			<CardContent>
 				<p className='flex items-center mb-2'>
 					<Calendar className='mr-2 h-4 w-4' />
-					{new Date(event.start).toLocaleDateString()}
+					{new Date(event.start).toLocaleDateString('no-NB')}
 				</p>
 				<p className='flex items-center'>
 					<MapPin className='mr-2 h-4 w-4' />

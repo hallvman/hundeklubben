@@ -74,8 +74,8 @@ export function EventCard({ event, onDelete, onEdit }: EventCardProps) {
 					<div className='flex items-center space-x-2'>
 						<CalendarIcon className='h-4 w-4' />
 						<span>
-							{new Date(event.start).toLocaleDateString()} -{' '}
-							{new Date(event.start).toLocaleTimeString()}
+							{new Date(event.start).toLocaleDateString('no-NB')} -{' '}
+							{new Date(event.start).toLocaleTimeString('no-NB')}
 						</span>
 					</div>
 				</CardDescription>
@@ -96,15 +96,15 @@ export function EventCard({ event, onDelete, onEdit }: EventCardProps) {
 					<div className='flex items-center space-x-2'>
 						<ClockIcon className='h-4 w-4' />
 						<span className='text-sm'>
-							{new Date(event.start).toLocaleDateString()} -{' '}
-							{new Date(event.start).toLocaleTimeString()}
+							{new Date(event.start).toLocaleDateString('no-NB')} -{' '}
+							{new Date(event.start).toLocaleTimeString('no-NB')}
 						</span>
 					</div>
 					<div className='flex items-center space-x-2'>
 						<ClockIcon className='h-4 w-4' />
 						<span className='text-sm'>
-							{new Date(event.end).toLocaleDateString()} -{' '}
-							{new Date(event.end).toLocaleTimeString()}
+							{new Date(event.end).toLocaleDateString('no-NB')} -{' '}
+							{new Date(event.end).toLocaleTimeString('no-NB')}
 						</span>
 					</div>
 					{event.attendees_limit !== 0 && (

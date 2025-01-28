@@ -70,13 +70,14 @@ export function EventDetails({
 			<h2 className='text-2xl font-bold'>{event.title}</h2>
 			<p className='flex items-center mb-2'>
 				<Calendar className='mr-2 h-4 w-4' />
-				Starttidspunkt: {new Date(event.start).toLocaleDateString()} -{' '}
-				{new Date(event.start).toLocaleTimeString()}
+				Starttidspunkt: {new Date(event.start).toLocaleDateString(
+					'no-NB'
+				)} - {new Date(event.start).toLocaleTimeString('no-NB')}
 			</p>
 			<p className='flex items-center mb-2'>
 				<Calendar className='mr-2 h-4 w-4' />
-				Sluttidspunkt: {new Date(event.end).toLocaleDateString()} -{' '}
-				{new Date(event.end).toLocaleTimeString()}
+				Sluttidspunkt: {new Date(event.end).toLocaleDateString('no-NB')} -{' '}
+				{new Date(event.end).toLocaleTimeString('no-NB')}
 			</p>
 			{event.description && (
 				<p className='flex items-center'>

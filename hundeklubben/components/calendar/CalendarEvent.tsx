@@ -14,13 +14,15 @@ export function CalendarEvent({ event }: CalendarEventProps) {
 			<h4>{event.title}</h4>
 			<p className='flex items-center mb-2'>
 				<Calendar className='mr-2 h-4 w-4' />
-				Starttidspunkt: {new Date(event.start).toLocaleDateString()} -{' '}
-				{new Date(event.start).toLocaleTimeString()}
+				Starttidspunkt: {new Date(event.start).toLocaleDateString(
+					'no-NB'
+				)} - {new Date(event.start).toLocaleTimeString('no-NB')}
 			</p>
 			<p className='flex items-center mb-2'>
 				<Calendar className='mr-2 h-4 w-4' />
-				Sluttidspunkt: {new Date(event.start).toLocaleDateString()} -{' '}
-				{new Date(event.end).toLocaleTimeString()}
+				Sluttidspunkt: {new Date(event.start).toLocaleDateString(
+					'no-NB'
+				)} - {new Date(event.end).toLocaleTimeString('no-NB')}
 			</p>
 			{event.description && (
 				<p className='flex items-center'>

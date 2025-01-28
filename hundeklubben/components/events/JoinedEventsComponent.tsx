@@ -80,7 +80,7 @@ export default function JoinedEventsComponent() {
 				id: event.id,
 				title: event.title,
 				description: event.description,
-				date: new Date(event.start).toLocaleDateString(),
+				date: new Date(event.start).toLocaleDateString('no-NB'),
 				location: event.location,
 			}));
 
