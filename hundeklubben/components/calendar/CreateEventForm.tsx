@@ -5,8 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface CreateEventFormProps {
+	isAdmin: boolean;
 	onCreateEvent: (
 		event: Omit<Event, 'id' | 'creator' | 'user_id' | 'attendees'>
 	) => void;
@@ -34,6 +36,7 @@ export function getSundayAfterNext(date: Date) {
 }
 
 export function CreateEventForm({
+	isAdmin,
 	onCreateEvent,
 	onCancel,
 }: CreateEventFormProps) {
@@ -46,6 +49,7 @@ export function CreateEventForm({
 	const [isPublic, setIsPublic] = useState(false);
 	const [minAllowedDate, setMinAllowedDate] = useState<string>('');
 	const [maxAllowedDate, setMaxAllowedDate] = useState<string>('');
+	const [isOutsideNormalRange, setIsOutsideNormalRange] = useState(false);
 
 	useEffect(() => {
 		const updateAllowedDates = () => {
@@ -78,6 +82,24 @@ export function CreateEventForm({
 		return () => clearInterval(intervalId);
 	}, []);
 
+	useEffect(() => {
+		if (isAdmin && (start || end)) {
+			const startDate = new Date(start);
+			const endDate = new Date(end);
+			const minDate = new Date(minAllowedDate);
+			const maxDate = new Date(maxAllowedDate);
+
+			setIsOutsideNormalRange(
+				startDate < minDate ||
+					startDate > maxDate ||
+					endDate < minDate ||
+					endDate > maxDate
+			);
+		} else {
+			setIsOutsideNormalRange(false);
+		}
+	}, [isAdmin, start, end, minAllowedDate, maxAllowedDate]);
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		onCreateEvent({
@@ -109,8 +131,8 @@ export function CreateEventForm({
 					type='datetime-local'
 					value={start}
 					onChange={(e) => setStart(e.target.value)}
-					min={minAllowedDate}
-					max={maxAllowedDate}
+					min={isAdmin ? undefined : minAllowedDate}
+					max={isAdmin ? undefined : maxAllowedDate}
 					required
 				/>
 			</div>
@@ -121,8 +143,8 @@ export function CreateEventForm({
 					type='datetime-local'
 					value={end}
 					onChange={(e) => setEnd(e.target.value)}
-					min={minAllowedDate}
-					max={maxAllowedDate}
+					min={isAdmin ? undefined : minAllowedDate}
+					max={isAdmin ? undefined : maxAllowedDate}
 					required
 				/>
 			</div>
@@ -161,6 +183,14 @@ export function CreateEventForm({
 				/>
 				<Label htmlFor='isPublic'>Offentlig event</Label>
 			</div>
+			{isAdmin && isOutsideNormalRange && (
+				<Alert>
+					<AlertDescription>
+						Du oppretter et arrangement utenfor det normale tidsrommet. Vær
+						sikker på at dette er tilsiktet.
+					</AlertDescription>
+				</Alert>
+			)}
 			<div className='flex justify-end space-x-2'>
 				<Button type='button' variant='outline' onClick={onCancel}>
 					Avslutt

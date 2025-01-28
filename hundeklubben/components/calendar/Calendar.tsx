@@ -21,7 +21,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Event } from '@/types/event';
-import { getUser, getUserEmail } from '@/utils/supabase/auth';
+import { checkAdminRole, getUser, getUserEmail } from '@/utils/supabase/auth';
 
 import './index.css';
 import { GetAllAttendees } from '@/utils/supabase/events';
@@ -52,6 +52,7 @@ export default function DogClubCalendar() {
 	const [currentView, setCurrentView] = useState<View>('month');
 	const [minAllowedDate, setMinAllowedDate] = useState<string>('');
 	const [maxAllowedDate, setMaxAllowedDate] = useState<string>('');
+	const [isAdmin, setIsAdmin] = useState(false);
 
 	useEffect(() => {
 		const fetchAttendeesCount = async () => {
@@ -65,6 +66,15 @@ export default function DogClubCalendar() {
 
 		fetchAttendeesCount();
 	}, [events]);
+
+	useEffect(() => {
+		const checkAdmin = async () => {
+			const isAdmin = await checkAdminRole();
+			setIsAdmin(isAdmin.isAdmin as boolean);
+		};
+
+		checkAdmin();
+	});
 
 	useEffect(() => {
 		const updateAllowedDates = () => {
@@ -201,6 +211,7 @@ export default function DogClubCalendar() {
 	};
 
 	const dayPropGetter = (date: Date) => {
+		if (isAdmin) return {};
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
 
@@ -251,6 +262,7 @@ export default function DogClubCalendar() {
 						<DialogTitle>Lag Event</DialogTitle>
 					</DialogHeader>
 					<CreateEventForm
+						isAdmin={isAdmin}
 						onCreateEvent={handleCreateEvent}
 						onCancel={() => setShowCreateForm(false)}
 					/>
