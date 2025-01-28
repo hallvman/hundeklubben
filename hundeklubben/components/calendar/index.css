@@ -3,3 +3,11 @@
     font-size: 14px !important;
     background: #17405d;
 }
+
+.disabled-day {
+    pointer-events: none;
+}
+
+.rbc-off-range-bg {
+    background-color: #f0f0f0;
+}

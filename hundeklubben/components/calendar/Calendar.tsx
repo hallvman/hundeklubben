@@ -4,7 +4,12 @@ import { useEffect, useState } from 'react';
 import { Calendar, momentLocalizer, View } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { CreateEventForm } from './CreateEventForm';
+import {
+	CreateEventForm,
+	getNextSunday,
+	getNextWednesdayNoon,
+	getSundayAfterNext,
+} from './CreateEventForm';
 import { EventDetails } from './EventDetails';
 import { useEvents } from '@/hooks/useEvents';
 import {
@@ -45,6 +50,8 @@ export default function DogClubCalendar() {
 		{}
 	);
 	const [currentView, setCurrentView] = useState<View>('month');
+	const [minAllowedDate, setMinAllowedDate] = useState<string>('');
+	const [maxAllowedDate, setMaxAllowedDate] = useState<string>('');
 
 	useEffect(() => {
 		const fetchAttendeesCount = async () => {
@@ -58,6 +65,37 @@ export default function DogClubCalendar() {
 
 		fetchAttendeesCount();
 	}, [events]);
+
+	useEffect(() => {
+		const updateAllowedDates = () => {
+			const now = new Date();
+			const nextWednesdayNoon = getNextWednesdayNoon(now);
+			const nextSunday = getNextSunday(now);
+			const sundayAfterNext = getSundayAfterNext(now);
+
+			let minDate: Date;
+			let maxDate: Date;
+
+			if (now < nextWednesdayNoon) {
+				// Before Wednesday noon
+				minDate = now;
+				maxDate = nextSunday;
+			} else {
+				// After Wednesday noon
+				minDate = now;
+				maxDate = sundayAfterNext;
+			}
+
+			setMinAllowedDate(minDate.toISOString().slice(0, 16));
+			setMaxAllowedDate(maxDate.toISOString().slice(0, 16));
+		};
+
+		updateAllowedDates();
+		// Update every minute to ensure accurate restrictions
+		const intervalId = setInterval(updateAllowedDates, 60000);
+
+		return () => clearInterval(intervalId);
+	}, []);
 
 	const handleSelectEvent = (event: Event) => {
 		setSelectedEvent(event);
@@ -162,6 +200,29 @@ export default function DogClubCalendar() {
 		},
 	};
 
+	const dayPropGetter = (date: Date) => {
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+
+		const isToday = date.getTime() === today.getTime();
+
+		if (
+			!isToday &&
+			(date.toISOString().slice(0, 16) < minAllowedDate ||
+				date.toISOString().slice(0, 16) > maxAllowedDate)
+		) {
+			return {
+				className: 'disabled-day',
+				style: {
+					cursor: 'not-allowed',
+					backgroundColor: '#f0f0f0',
+					color: '#999999',
+				},
+			};
+		}
+		return {};
+	};
+
 	if (loading) {
 		return <Loader2 className='h-8 w-8 animate-spin' />;
 	}
@@ -176,6 +237,7 @@ export default function DogClubCalendar() {
 				onSelectEvent={handleSelectEvent}
 				onView={(view) => setCurrentView(view)}
 				view={currentView}
+				dayPropGetter={dayPropGetter}
 				components={components}
 				className='h-full'
 				views={['month', 'week', 'day', 'agenda']}

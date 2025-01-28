@@ -13,21 +13,21 @@ interface CreateEventFormProps {
 	onCancel: () => void;
 }
 
-function getNextWednesdayNoon(date: Date) {
+export function getNextWednesdayNoon(date: Date) {
 	const nextWednesday = new Date(date);
 	nextWednesday.setDate(date.getDate() + ((3 - date.getDay() + 7) % 7));
 	nextWednesday.setHours(12, 0, 0, 0);
 	return nextWednesday;
 }
 
-function getNextSunday(date: Date) {
+export function getNextSunday(date: Date) {
 	const nextSunday = new Date(date);
 	nextSunday.setDate(date.getDate() + ((7 - date.getDay()) % 7));
 	nextSunday.setHours(23, 59, 59, 0);
 	return nextSunday;
 }
 
-function getSundayAfterNext(date: Date) {
+export function getSundayAfterNext(date: Date) {
 	const nextSunday = getNextSunday(date);
 	nextSunday.setDate(nextSunday.getDate() + 7);
 	return nextSunday;
