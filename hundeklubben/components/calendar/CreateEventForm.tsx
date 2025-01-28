@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Event } from '@/types/event';
+import { useEffect, useState } from 'react';
+import type { Event } from '@/types/event';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,6 +13,26 @@ interface CreateEventFormProps {
 	onCancel: () => void;
 }
 
+function getNextWednesdayNoon(date: Date) {
+	const nextWednesday = new Date(date);
+	nextWednesday.setDate(date.getDate() + ((3 - date.getDay() + 7) % 7));
+	nextWednesday.setHours(12, 0, 0, 0);
+	return nextWednesday;
+}
+
+function getNextSunday(date: Date) {
+	const nextSunday = new Date(date);
+	nextSunday.setDate(date.getDate() + ((7 - date.getDay()) % 7));
+	nextSunday.setHours(23, 59, 59, 0);
+	return nextSunday;
+}
+
+function getSundayAfterNext(date: Date) {
+	const nextSunday = getNextSunday(date);
+	nextSunday.setDate(nextSunday.getDate() + 7);
+	return nextSunday;
+}
+
 export function CreateEventForm({
 	onCreateEvent,
 	onCancel,
@@ -24,6 +44,39 @@ export function CreateEventForm({
 	const [description, setDescription] = useState('');
 	const [location, setLocation] = useState('');
 	const [isPublic, setIsPublic] = useState(false);
+	const [minAllowedDate, setMinAllowedDate] = useState<string>('');
+	const [maxAllowedDate, setMaxAllowedDate] = useState<string>('');
+
+	useEffect(() => {
+		const updateAllowedDates = () => {
+			const now = new Date();
+			const nextWednesdayNoon = getNextWednesdayNoon(now);
+			const nextSunday = getNextSunday(now);
+			const sundayAfterNext = getSundayAfterNext(now);
+
+			let minDate: Date;
+			let maxDate: Date;
+
+			if (now < nextWednesdayNoon) {
+				// Before Wednesday noon
+				minDate = now;
+				maxDate = nextSunday;
+			} else {
+				// After Wednesday noon
+				minDate = now;
+				maxDate = sundayAfterNext;
+			}
+
+			setMinAllowedDate(minDate.toISOString().slice(0, 16));
+			setMaxAllowedDate(maxDate.toISOString().slice(0, 16));
+		};
+
+		updateAllowedDates();
+		// Update every minute to ensure accurate restrictions
+		const intervalId = setInterval(updateAllowedDates, 60000);
+
+		return () => clearInterval(intervalId);
+	}, []);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -56,6 +109,8 @@ export function CreateEventForm({
 					type='datetime-local'
 					value={start}
 					onChange={(e) => setStart(e.target.value)}
+					min={minAllowedDate}
+					max={maxAllowedDate}
 					required
 				/>
 			</div>
@@ -66,6 +121,8 @@ export function CreateEventForm({
 					type='datetime-local'
 					value={end}
 					onChange={(e) => setEnd(e.target.value)}
+					min={minAllowedDate}
+					max={maxAllowedDate}
 					required
 				/>
 			</div>
