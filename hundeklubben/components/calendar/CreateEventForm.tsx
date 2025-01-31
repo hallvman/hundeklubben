@@ -15,11 +15,15 @@ interface CreateEventFormProps {
 	onCancel: () => void;
 }
 
-export function getNextWednesdayNoon(date: Date) {
-	const nextWednesday = new Date(date);
-	nextWednesday.setDate(date.getDate() + ((3 - date.getDay() + 7) % 7));
-	nextWednesday.setHours(12, 0, 0, 0);
-	return nextWednesday;
+export function getThisWeeksWednesday(today: Date) {
+	const currentDay = today.getDay();
+	const wednesdayOffset = currentDay <= 3 ? 3 - currentDay : -(currentDay - 3);
+
+	const thisWeeksWednesday = new Date(today);
+	thisWeeksWednesday.setDate(today.getDate() + wednesdayOffset);
+	thisWeeksWednesday.setHours(12, 0, 0, 0);
+
+	return thisWeeksWednesday;
 }
 
 export function getNextSunday(date: Date) {
@@ -54,19 +58,17 @@ export function CreateEventForm({
 	useEffect(() => {
 		const updateAllowedDates = () => {
 			const now = new Date();
-			const nextWednesdayNoon = getNextWednesdayNoon(now);
+			const thisWeeksWednesDay = getThisWeeksWednesday(now);
 			const nextSunday = getNextSunday(now);
 			const sundayAfterNext = getSundayAfterNext(now);
 
 			let minDate: Date;
 			let maxDate: Date;
 
-			if (now < nextWednesdayNoon) {
-				// Before Wednesday noon
+			if (now < thisWeeksWednesDay) {
 				minDate = now;
 				maxDate = nextSunday;
 			} else {
-				// After Wednesday noon
 				minDate = now;
 				maxDate = sundayAfterNext;
 			}

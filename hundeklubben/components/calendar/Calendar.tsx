@@ -7,8 +7,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import {
 	CreateEventForm,
 	getNextSunday,
-	getNextWednesdayNoon,
 	getSundayAfterNext,
+	getThisWeeksWednesday,
 } from './CreateEventForm';
 import { EventDetails } from './EventDetails';
 import { useEvents } from '@/hooks/useEvents';
@@ -86,19 +86,17 @@ export default function DogClubCalendar() {
 	useEffect(() => {
 		const updateAllowedDates = () => {
 			const now = new Date();
-			const nextWednesdayNoon = getNextWednesdayNoon(now);
+			const thisWeeksWednesDay = getThisWeeksWednesday(now);
 			const nextSunday = getNextSunday(now);
 			const sundayAfterNext = getSundayAfterNext(now);
 
 			let minDate: Date;
 			let maxDate: Date;
 
-			if (now < nextWednesdayNoon) {
-				// Before Wednesday noon
+			if (now < thisWeeksWednesDay) {
 				minDate = now;
 				maxDate = nextSunday;
 			} else {
-				// After Wednesday noon
 				minDate = now;
 				maxDate = sundayAfterNext;
 			}
