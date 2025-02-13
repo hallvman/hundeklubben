@@ -25,7 +25,6 @@ import {
 	getEventsDataForEventIds,
 	leaveEvent,
 } from '@/utils/supabase/events';
-import { createClient } from '@/utils/supabase/server';
 
 interface JoinedEvent {
 	id: string;
