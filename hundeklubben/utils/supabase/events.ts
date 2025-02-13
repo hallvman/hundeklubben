@@ -227,4 +227,36 @@ export async function getAllMyEvents(page = 1, itemsPerPage = 9): Promise<Event[
   }
 }
 
+export async function getAttendeeDataForUser(email:string){
+	const supabase = createClient();
+	
+  const { data: attendeeData, error: attendeeError } = await supabase
+    .from('event_attendees')
+		.select('event_id')
+		.eq('attendees_email', email);
+
+  if (attendeeError) {
+    console.error('Error fetching events:', attendeeError);
+    return [];
+  }
+
+  return attendeeData;
+}
+
+export async function getEventsDataForEventIds(eventIds: string[]) {
+  const supabase = createClient()
+  
+  const { data: eventsData, error: eventsError } = await supabase
+    .from('events')
+    .select('*')
+    .in('id', eventIds)
+
+  if (eventsError) {
+    console.error('Error fetching events:', eventsError)
+    return []
+  }
+
+  return eventsData
+}
+
 

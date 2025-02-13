@@ -2,7 +2,6 @@
 
 import { useToast } from '@/hooks/use-toast';
 import { getUser } from '@/utils/supabase/auth';
-import { createClient } from '@/utils/supabase/client';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -21,7 +20,12 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog';
-import { leaveEvent } from '@/utils/supabase/events';
+import {
+	getAttendeeDataForUser,
+	getEventsDataForEventIds,
+	leaveEvent,
+} from '@/utils/supabase/events';
+import { createClient } from '@/utils/supabase/server';
 
 interface JoinedEvent {
 	id: string;
@@ -39,7 +43,6 @@ export default function JoinedEventsComponent() {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 	const { toast } = useToast();
-	const supabase = createClient();
 
 	useEffect(() => {
 		fetchEvents();
@@ -56,12 +59,7 @@ export default function JoinedEventsComponent() {
 			}
 			setUserEmail(user.email as string);
 
-			const { data: attendeeData, error: attendeeError } = await supabase
-				.from('event_attendees')
-				.select('event_id')
-				.eq('attendees_email', user.email);
-
-			if (attendeeError) throw attendeeError;
+			const attendeeData = await getAttendeeDataForUser(user.email as string);
 
 			if (!attendeeData || attendeeData.length === 0) {
 				setJoinedEvents([]);
@@ -69,12 +67,8 @@ export default function JoinedEventsComponent() {
 			}
 
 			const eventIds = attendeeData.map((item) => item.event_id);
-			const { data: eventsData, error: eventsError } = await supabase
-				.from('events')
-				.select('*')
-				.in('id', eventIds);
 
-			if (eventsError) throw eventsError;
+			const eventsData = await getEventsDataForEventIds(eventIds);
 
 			const formattedEvents = eventsData.map((event) => ({
 				id: event.id,

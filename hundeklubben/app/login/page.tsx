@@ -23,7 +23,7 @@ export default function SignIn() {
 			return encodedRedirect('error', '/signin', 'Could not authenticate user');
 		}
 
-		return redirect('/');
+		return redirect('/calendar');
 	};
 
 	return (
