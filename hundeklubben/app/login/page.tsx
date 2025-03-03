@@ -20,7 +20,11 @@ export default function SignIn() {
 		});
 
 		if (error) {
-			return encodedRedirect('error', '/signin', 'Could not authenticate user');
+			return encodedRedirect(
+				'error',
+				'/calendar',
+				'Could not authenticate user'
+			);
 		}
 
 		return redirect('/calendar');

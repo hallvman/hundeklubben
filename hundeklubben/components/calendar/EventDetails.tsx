@@ -1,4 +1,6 @@
-import { Event } from '@/types/event';
+'use client';
+
+import type { Event } from '@/types/event';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { getUserEmail } from '@/utils/supabase/auth';
@@ -13,6 +15,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog';
+import { GetAllAttendees } from '@/utils/supabase/events';
 
 interface EventDetailsProps {
 	event: Event;
@@ -31,14 +34,31 @@ export function EventDetails({
 }: EventDetailsProps) {
 	const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+	const [attendees, setAttendees] = useState<{
+		confirmed: string[];
+		waitlist: string[];
+	}>({
+		confirmed: [],
+		waitlist: [],
+	});
 
 	useEffect(() => {
-		async function fetchUserEmail() {
+		async function fetchData() {
 			const email = await getUserEmail();
 			setCurrentUserEmail(email as string);
+
+			const eventAttendees = await GetAllAttendees(event.id);
+			setAttendees({
+				confirmed: eventAttendees
+					.filter((a) => a.status === 'confirmed')
+					.map((a) => a.attendees_email),
+				waitlist: eventAttendees
+					.filter((a) => a.status === 'waitlist')
+					.map((a) => a.attendees_email),
+			});
 		}
-		fetchUserEmail();
-	}, []);
+		fetchData();
+	}, [event.id]);
 
 	const handleJoin = () => {
 		onJoin(event.id);
@@ -53,16 +73,19 @@ export function EventDetails({
 		setIsDeleteDialogOpen(false);
 	};
 
-	const attendeeCount = event.attendees?.length ?? 0;
+	const confirmedCount = attendees.confirmed.length;
+	const waitlistCount = attendees.waitlist.length;
 	const hasAttendeeLimit =
 		event.attendees_limit !== null && event.attendees_limit > 0;
 	const isFull =
-		hasAttendeeLimit && attendeeCount >= (event.attendees_limit ?? 0);
+		hasAttendeeLimit && confirmedCount >= (event.attendees_limit ?? 0);
 	const attendeePercentage = hasAttendeeLimit
-		? Math.min((attendeeCount / (event.attendees_limit ?? 1)) * 100, 100)
+		? Math.min((confirmedCount / (event.attendees_limit ?? 1)) * 100, 100)
 		: 0;
 	const isAttending =
-		currentUserEmail && event.attendees?.includes(currentUserEmail);
+		currentUserEmail && attendees.confirmed.includes(currentUserEmail);
+	const isOnWaitlist =
+		currentUserEmail && attendees.waitlist.includes(currentUserEmail);
 	const isCreator = currentUserEmail === event.creator;
 
 	return (
@@ -94,20 +117,26 @@ export function EventDetails({
 			{hasAttendeeLimit && (
 				<div>
 					<p className='text-sm text-muted-foreground'>
-						{attendeeCount} / {event.attendees_limit} deltagere
+						{confirmedCount} / {event.attendees_limit} deltagere
 					</p>
 					<Progress value={attendeePercentage} className='mt-2' />
 				</div>
 			)}
+			{waitlistCount > 0 && (
+				<p className='text-sm text-muted-foreground'>
+					{waitlistCount} {waitlistCount === 1 ? 'person' : 'personer'} på
+					venteliste
+				</p>
+			)}
 			<div className='flex justify-end space-x-2'>
-				{!isAttending && hasAttendeeLimit && (
-					<Button onClick={handleJoin} disabled={isFull} aria-disabled={isFull}>
-						{isFull ? 'Event Full' : 'Join Event'}
+				{!isAttending && !isOnWaitlist && (
+					<Button onClick={handleJoin}>
+						{isFull ? 'Bli med på venteliste' : 'Bli med på event'}
 					</Button>
 				)}
-				{isAttending && (
+				{(isAttending || isOnWaitlist) && (
 					<Button onClick={handleLeave} variant='destructive'>
-						Forlat Event
+						{isAttending ? 'Forlat Event' : 'Forlat venteliste'}
 					</Button>
 				)}
 				{isCreator && (
@@ -146,9 +175,10 @@ export function EventDetails({
 					Lukk
 				</Button>
 			</div>
-			{isFull && (
-				<p className='text-sm text-red-500' role='alert'>
-					Dette eventet har nådd max antall.
+			{isFull && !isOnWaitlist && !isAttending && (
+				<p className='text-sm text-yellow-500' role='alert'>
+					Dette eventet har nådd maks antall deltakere. Du blir lagt til på
+					ventelisten.
 				</p>
 			)}
 		</div>

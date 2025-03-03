@@ -24,7 +24,7 @@ import { Event } from '@/types/event';
 import { checkAdminRole, getUser, getUserEmail } from '@/utils/supabase/auth';
 
 import './index.css';
-import { GetAllAttendees } from '@/utils/supabase/events';
+import { GetAllAttendees, processWaitlist } from '@/utils/supabase/events';
 import { CalendarEvent } from './CalendarEvent';
 import { MonthEvent } from './MonthEvent';
 import { WeekEvent } from './WeekEvent';
@@ -148,17 +148,17 @@ export default function DogClubCalendar() {
 		const event = events.find((e) => e.id === eventId);
 		if (event) {
 			const allAttendees = await GetAllAttendees(event.id);
+			await updateEvent(event.id, attendeeEmail as string);
 			if (allAttendees?.length < event.attendees_limit) {
-				updateEvent(event.id, attendeeEmail as string);
 				toast({
 					title: 'Success',
 					description: 'Du er nå lagt til i eventet.',
 				});
 			} else {
 				toast({
-					title: 'Error',
-					description: 'Dette eventet er fult.',
-					variant: 'destructive',
+					title: 'Venteliste',
+					description:
+						'Dette eventet er fult, og du er satt på venteliste. Du blir automatisk lagt til om noen melder seg av og du vil få varsel på mail.',
 				});
 			}
 		}
@@ -169,7 +169,8 @@ export default function DogClubCalendar() {
 		const attendeeEmail = await getUserEmail();
 		const event = events.find((e) => e.id === eventId);
 		if (event) {
-			removeFromEvent(eventId, attendeeEmail as string);
+			await removeFromEvent(eventId, attendeeEmail as string);
+			await processWaitlist(eventId);
 			toast({
 				title: 'Success',
 				description: 'Du er nå fjernet fra eventet',

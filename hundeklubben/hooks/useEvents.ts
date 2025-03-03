@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { getAllEvents, addEvent as addEventToDb, deleteEvent as deleteEventFromDb, joinEvent, deleteFromEvent } from '@/utils/supabase/events'
 import { Event } from '@/types/event'
-import { redirect } from 'next/navigation'
 
 export function useEvents() {
   const [events, setEvents] = useState<Event[]>([])

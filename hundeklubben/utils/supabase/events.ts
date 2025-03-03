@@ -1,6 +1,5 @@
 "use server"
 
-import { revalidatePath } from 'next/cache';
 import { createClient } from './server';
 import { Event } from '@/types/event'
 import { redirect } from 'next/navigation';
@@ -121,19 +120,55 @@ export async function deleteEvent(eventId: string) {
   redirect('/calendar')
 }
 
-export async function joinEvent(event_id: string, attendees_email: string) {
+export async function joinEvent(eventId: string, email: string) {
   const supabase = createClient()
-  
-    const { error } = await supabase
-      .from('event_attendees')
-      .insert({ event_id, attendees_email })
 
-  if (error) {
-    console.error('Error updating event attendees:', error)
-    throw error
+  // Get current attendee count
+  const { count } = await supabase
+    .from("event_attendees")
+    .select("*", { count: "exact" })
+    .eq("event_id", eventId)
+    .eq("status", "confirmed")
+    .single()
+
+  // Get event details
+  const { data: event } = await supabase
+    .from("events")
+    .select("*")
+    .eq("id", eventId)
+    .single()
+
+  if (!event) {
+    throw new Error("Event not found")
   }
 
-  redirect('/calendar')
+  // Determine if user should go to waitlist
+  const status = count && count >= event.attendees_limit ? "waitlist" : "confirmed"
+
+  // Add attendee
+  const { error } = await supabase
+    .from("event_attendees")
+    .upsert({
+      event_id: eventId,
+      attendees_email: email,
+      status,
+    })
+
+  if (error) throw error
+
+  // if (status === "waitlist") {
+  //   await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/notifications/waitlist`, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       email,
+  //       eventId,
+  //       event: event.title,
+  //     }),
+  //   })
+  // }
 }
 
 export async function deleteFromEvent(event_id: string, attendees_email: string) {
@@ -149,7 +184,6 @@ export async function deleteFromEvent(event_id: string, attendees_email: string)
     return { success: false, message: error.message }
   }
 
-  revalidatePath('/calendar')
   return { success: true, message: `Event ble slettet!` }
 }
 
@@ -166,7 +200,6 @@ export async function leaveEvent(eventId: string, userEmail: string) {
     return { success: false, error: error.message }
   }
 
-  revalidatePath('/dashboard')
   return { success: true }
 }
 
@@ -259,4 +292,36 @@ export async function getEventsDataForEventIds(eventIds: string[]) {
   return eventsData
 }
 
+export async function processWaitlist(eventId: string) {
+  console.log("Vi er her")
+  const supabase = createClient()
 
+  const { data: nextAttendee } = await supabase
+    .from("event_attendees")
+    .select("*")
+    .eq("event_id", eventId)
+    .eq("status", "waitlist")
+    .order("waitlist_position", { ascending: true })
+    .limit(1)
+    .single();
+
+  console.log("nextAttendee", nextAttendee)
+
+  if (nextAttendee) {
+    await supabase
+      .from("event_attendees")
+      .update({ status: "confirmed", waitlist_position: null })
+      .eq("id", nextAttendee.id);
+
+    // await fetch(`${process.env.NEXT_PUBLIC_WEBSITE_URL}/api/notifications/confirmed`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     email: nextAttendee.attendees_email,
+    //     eventId,
+    //   }),
+    // })
+  }
+}
